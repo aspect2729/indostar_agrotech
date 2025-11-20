@@ -1,0 +1,142 @@
+/**
+ * Error Message Styles
+ */
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.error-message.error {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+}
+
+.error-message.warning {
+  background-color: #fff4e5;
+  border: 1px solid #ffe0b2;
+  color: #e65100;
+}
+
+.error-message.info {
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+  color: #1976d2;
+}
+
+.error-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+.error-text {
+  flex: 1;
+  word-break: break-word;
+}
+
+.error-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  opacity: 0.7;
+}
+
+.error-dismiss:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.error-dismiss:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Field-level error message */
+.field-error {
+  display: block;
+  color: #c33;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  animation: slideInDown 0.2s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Input error state */
+input.error,
+textarea.error,
+select.error {
+  border-color: #c33 !important;
+  background-color: #fff5f5;
+}
+
+input.error:focus,
+textarea.error:focus,
+select.error:focus {
+  outline-color: #c33;
+  box-shadow: 0 0 0 3px rgba(204, 51, 51, 0.1);
+}
+
+/* Success state */
+input.success,
+textarea.success,
+select.success {
+  border-color: #4caf50 !important;
+}
+
+input.success:focus,
+textarea.success:focus,
+select.success:focus {
+  outline-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* Validation icon */
+.input-wrapper {
+  position: relative;
+}
+
+.validation-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.validation-icon.error {
+  color: #c33;
+}
+
+.validation-icon.success {
+  color: #4caf50;
+}

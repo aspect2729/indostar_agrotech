@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Test - Indostar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2 px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #27ae60;
+        }
+        .error {
+            color: #e74c3c;
+            padding: 10px;
+            background: #fadbd8;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #27ae60;
+            padding: 10px;
+            background: #d5f4e6;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .status.ok {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        .status.fail {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Indostar Login Debug Tool</h1>
+    
+    <div class="test-section">
+        <h2>1. Environment Check</h2>
+        <div id="env-check">
+            <p>Checking environment variables...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Backend Health Check</h2>
+        <button onclick="checkBackend()">Test Backend Connection</button>
+        <div id="backend-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. OAuth Initiation Test</h2>
+        <button onclick="testOAuthInit()">Test OAuth Initiation</button>
+        <div id="oauth-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Full Login Flow</h2>
+        <button onclick="startLogin()">Start Login (Customer)</button>
+        <button onclick="startLoginBusiness()">Start Login (Business)</button>
+        <div id="login-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Current Auth State</h2>
+        <button onclick="checkAuthState()">Check Auth State</button>
+        <div id="auth-state"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const FRONTEND_URL = 'http://localhost:3000';
+
+        // Check environment
+        window.addEventListener('load', () => {
+            const envCheck = document.getElementById('env-check');
+            envCheck.innerHTML = `
+                <p>API URL: <strong>${API_URL}</strong></p>
+                <p>Frontend URL: <strong>${FRONTEND_URL}</strong></p>
+            `;
+        });
+
+        // Test backend connection
+        async function checkBackend() {
+            const resultDiv = document.getElementById('backend-result');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/docs`);
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="success">✓ Backend is running!</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="error">✗ Backend returned status: ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">✗ Cannot connect to backend: ${error.message}</div>`;
+            }
+        }
+
+        // Test OAuth initiation
+        async function testOAuthInit() {
+            const resultDiv = document.getElementById('oauth-result');
+            resultDiv.innerHTML = '<p>Testing OAuth initiation...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/google`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        redirect_uri: `${FRONTEND_URL}/login`
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✓ OAuth initiation successful!</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p><strong>Authorization URL:</strong></p>
+                        <pre style="word-break: break-all;">${data.authorization_url}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">✗ OAuth initiation failed</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Start login flow
+        async function startLogin() {
+            await initiateLogin('customer');
+        }
+
+        async function startLoginBusiness() {
+            await initiateLogin('business');
+        }
+
+        async function initiateLogin(type) {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.innerHTML = `<p>Initiating ${type} login...</p>`;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/auth/google`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        redirect_uri: `${API_URL}/api/auth/callback`
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.authorization_url) {
+                    sessionStorage.setItem('indostar_login_type', type);
+                    resultDiv.innerHTML = `
+                        <div class="success">✓ Redirecting to Google...</div>
+                        <p>If not redirected, <a href="${data.authorization_url}">click here</a></p>
+                    `;
+                    setTimeout(() => {
+                        window.location.href = data.authorization_url;
+                    }, 1000);
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">✗ Failed to get authorization URL</div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Check current auth state
+        function checkAuthState() {
+            const resultDiv = document.getElementById('auth-state');
+            
+            const authToken = localStorage.getItem('indostar_auth_token');
+            const refreshToken = localStorage.getItem('indostar_refresh_token');
+            const user = localStorage.getItem('indostar_user');
+            
+            let html = '<h3>LocalStorage Contents:</h3>';
+            
+            if (authToken) {
+                html += `<p>Auth Token: <span class="status ok">Present</span></p>`;
+                html += `<pre>${authToken.substring(0, 50)}...</pre>`;
+            } else {
+                html += `<p>Auth Token: <span class="status fail">Not Found</span></p>`;
+            }
+            
+            if (refreshToken) {
+                html += `<p>Refresh Token: <span class="status ok">Present</span></p>`;
+                html += `<pre>${refreshToken.substring(0, 50)}...</pre>`;
+            } else {
+                html += `<p>Refresh Token: <span class="status fail">Not Found</span></p>`;
+            }
+            
+            if (user) {
+                html += `<p>User Data: <span class="status ok">Present</span></p>`;
+                try {
+                    const userData = JSON.parse(user);
+                    html += `<pre>${JSON.stringify(userData, null, 2)}</pre>`;
+                } catch (e) {
+                    html += `<pre>${user}</pre>`;
+                }
+            } else {
+                html += `<p>User Data: <span class="status fail">Not Found</span></p>`;
+            }
+            
+            resultDiv.innerHTML = html;
+        }
+
+        // Check for OAuth callback
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            
+            if (code && state) {
+                document.getElementById('login-result').innerHTML = `
+                    <div class="success">✓ Received OAuth callback!</div>
+                    <p>Code: ${code.substring(0, 20)}...</p>
+                    <p>State: ${state.substring(0, 20)}...</p>
+                    <p>Now the frontend should exchange this code for tokens.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

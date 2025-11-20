@@ -1,0 +1,205 @@
+/**
+ * Authentication Context
+ * 
+ * Provides authentication state and methods throughout the application.
+ * Manages JWT tokens, user profile, and authentication flows.
+ */
+
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { User, AuthContextType, TokenResponse } from '../types';
+import {
+  handleGoogleCallback,
+  refreshToken as refreshTokenApi,
+  logout as logoutApi,
+} from '../services/authService';
+import {
+  getAuthToken,
+  getRefreshToken,
+  getStoredUser,
+  setAuthToken,
+  setRefreshToken,
+  setStoredUser,
+  clearStorage,
+} from '../utils/storage';
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessTokenState] = useState<string | null>(null);
+  const [refreshTokenState, setRefreshTokenState] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Initialize auth state from localStorage
+  useEffect(() => {
+    const initializeAuth = () => {
+      try {
+        const storedToken = getAuthToken();
+        const storedRefreshToken = getRefreshToken();
+        const storedUser = getStoredUser();
+
+        if (storedToken && storedRefreshToken && storedUser) {
+          setAccessTokenState(storedToken);
+          setRefreshTokenState(storedRefreshToken);
+          setUser(storedUser);
+        }
+      } catch (err) {
+        console.error('Error initializing auth:', err);
+        clearStorage();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  /**
+   * Handle successful authentication
+   */
+  const handleAuthSuccess = useCallback((tokenResponse: TokenResponse) => {
+    const { access_token, refresh_token, user_id, email, name, role } = tokenResponse;
+
+    // Create user object
+    const userObj: User = {
+      _id: user_id,
+      googleId: user_id,
+      email,
+      name,
+      role,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Update state
+    setAccessTokenState(access_token);
+    setRefreshTokenState(refresh_token);
+    setUser(userObj);
+
+    // Persist to localStorage
+    setAuthToken(access_token);
+    setRefreshToken(refresh_token);
+    setStoredUser(userObj);
+
+    setError(null);
+  }, []);
+
+  /**
+   * Login with Google OAuth callback
+   */
+  const login = useCallback(async (code: string, state: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const tokenResponse = await handleGoogleCallback(code, state);
+      handleAuthSuccess(tokenResponse);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [handleAuthSuccess]);
+
+  /**
+   * Logout user
+   */
+  const logout = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Call logout API
+      await logoutApi();
+    } catch (err) {
+      console.error('Logout API error:', err);
+      // Continue with logout even if API call fails
+    } finally {
+      // Clear state
+      setAccessTokenState(null);
+      setRefreshTokenState(null);
+      setUser(null);
+
+      // Clear localStorage
+      clearStorage();
+
+      setIsLoading(false);
+    }
+  }, []);
+
+  /**
+   * Refresh access token
+   */
+  const refreshAccessToken = useCallback(async () => {
+    const currentRefreshToken = refreshTokenState || getRefreshToken();
+
+    if (!currentRefreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    try {
+      const tokenResponse = await refreshTokenApi(currentRefreshToken);
+      handleAuthSuccess(tokenResponse);
+    } catch (err) {
+      // If refresh fails, logout user
+      console.error('Token refresh failed:', err);
+      await logout();
+      throw err;
+    }
+  }, [refreshTokenState, handleAuthSuccess, logout]);
+
+  /**
+   * Update user profile
+   */
+  const updateUser = useCallback((updates: Partial<User>) => {
+    setUser(prevUser => {
+      if (!prevUser) return null;
+
+      const updatedUser = {
+        ...prevUser,
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Persist to localStorage
+      setStoredUser(updatedUser);
+
+      return updatedUser;
+    });
+  }, []);
+
+  const value: AuthContextType = {
+    user,
+    accessToken,
+    refreshToken: refreshTokenState,
+    isAuthenticated: !!user && !!accessToken,
+    isLoading,
+    error,
+    login,
+    logout,
+    refreshAccessToken,
+    updateUser,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+/**
+ * Hook to use auth context
+ */
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export default AuthContext;
