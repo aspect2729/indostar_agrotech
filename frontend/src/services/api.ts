@@ -8,6 +8,14 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig, AxiosResp
 import { config } from '../utils/config';
 import { getToken, setToken, removeToken, getRefreshToken } from '../utils/storage';
 import { ApiError } from '../types';
+import { logger } from '../utils/logger';
+
+// Log API configuration on initialization
+logger.info('API client initialized', {
+  baseURL: config.apiUrl,
+  timeout: config.apiTimeout,
+  environment: process.env.NODE_ENV
+}, 'API');
 
 // Create axios instance with default configuration
 const api: AxiosInstance = axios.create({
@@ -49,9 +57,17 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
+    logger.debug('API Request', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      baseURL: config.baseURL,
+      hasAuth: !!token
+    }, 'API');
+    
     return config;
   },
   (error: AxiosError) => {
+    logger.error('API Request Error', error, 'API');
     return Promise.reject(error);
   }
 );
@@ -62,9 +78,22 @@ api.interceptors.request.use(
  */
 api.interceptors.response.use(
   (response: AxiosResponse) => {
+    logger.debug('API Response', {
+      status: response.status,
+      url: response.config.url,
+      method: response.config.method?.toUpperCase()
+    }, 'API');
+    
     return response;
   },
   async (error: AxiosError<ApiError>) => {
+    logger.error('API Response Error', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      url: error.config?.url,
+      method: error.config?.method?.toUpperCase(),
+      data: error.response?.data
+    }, 'API');
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     // Handle 401 Unauthorized errors

@@ -22,3 +22,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.env.docker.example
+backend/.env.atlas
+backend/.env.example
+frontend/.env.example
+frontend/env.sh
+package-lock.json
+setup_oauth.sh
+redeploy.sh
+verify-deployment.sh

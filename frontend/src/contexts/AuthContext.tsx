@@ -21,6 +21,7 @@ import {
   setStoredUser,
   clearStorage,
 } from '../utils/storage';
+import { logger } from '../utils/logger';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -43,13 +44,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const storedRefreshToken = getRefreshToken();
         const storedUser = getStoredUser();
 
+        logger.info('Initializing auth', {
+          hasToken: !!storedToken,
+          hasRefreshToken: !!storedRefreshToken,
+          hasUser: !!storedUser
+        }, 'Auth');
+
         if (storedToken && storedRefreshToken && storedUser) {
           setAccessTokenState(storedToken);
           setRefreshTokenState(storedRefreshToken);
           setUser(storedUser);
+          logger.info('User authenticated from storage', {
+            userId: storedUser._id,
+            role: storedUser.role,
+            email: storedUser.email
+          }, 'Auth');
         }
       } catch (err) {
-        console.error('Error initializing auth:', err);
+        logger.error('Error initializing auth', err, 'Auth');
         clearStorage();
       } finally {
         setIsLoading(false);
@@ -96,11 +108,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     setError(null);
 
+    logger.info('Login attempt', { hasCode: !!code, hasState: !!state }, 'Auth');
+
     try {
       const tokenResponse = await handleGoogleCallback(code, state);
       handleAuthSuccess(tokenResponse);
+      logger.info('Login successful', {
+        userId: tokenResponse.user_id,
+        role: tokenResponse.role,
+        email: tokenResponse.email
+      }, 'Auth');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      logger.error('Login failed', err, 'Auth');
       setError(errorMessage);
       throw err;
     } finally {
@@ -115,11 +135,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     setError(null);
 
+    logger.info('User logging out', { userId: user?._id }, 'Auth');
+
     try {
       // Call logout API
       await logoutApi();
     } catch (err) {
-      console.error('Logout API error:', err);
+      logger.error('Logout API error', err, 'Auth');
       // Continue with logout even if API call fails
     } finally {
       // Clear state
@@ -130,9 +152,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Clear localStorage
       clearStorage();
 
+      logger.info('Logout complete', null, 'Auth');
       setIsLoading(false);
     }
-  }, []);
+  }, [user]);
 
   /**
    * Refresh access token
