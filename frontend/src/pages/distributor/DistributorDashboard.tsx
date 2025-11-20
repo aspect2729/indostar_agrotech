@@ -42,8 +42,10 @@ const DistributorDashboard: React.FC = () => {
       });
       
       // Filter for bulk products (jaggery and oil)
-      const bulkProducts = productsResponse.data.filter(
-        p => p.category === 'jaggery' || p.category === 'oil'
+      // Backend returns {products: [...]} not {data: [...]}
+      const allProducts = (productsResponse as any).products || (productsResponse as any).data || [];
+      const bulkProducts = allProducts.filter(
+        (p: any) => p.category === 'jaggery' || p.category === 'oil'
       );
       setProducts(bulkProducts);
 
@@ -57,8 +59,8 @@ const DistributorDashboard: React.FC = () => {
       const allOrders = ordersResponse.data;
       setStats({
         totalOrders: ordersResponse.total,
-        pendingOrders: allOrders.filter(o => o.status === 'pending' || o.status === 'confirmed').length,
-        completedOrders: allOrders.filter(o => o.status === 'delivered').length
+        pendingOrders: (allOrders || []).filter((o: any) => o.status === 'pending' || o.status === 'confirmed').length,
+        completedOrders: (allOrders || []).filter((o: any) => o.status === 'delivered').length
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -199,7 +201,7 @@ const DistributorDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : products.length === 0 ? (
+          ) : (products?.length || 0) === 0 ? (
             <div className="no-products">
               <div className="no-products-icon">📦</div>
               <p>No bulk products available at the moment</p>
@@ -276,7 +278,7 @@ const DistributorDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : recentOrders.length === 0 ? (
+          ) : (recentOrders?.length || 0) === 0 ? (
             <div className="no-orders">
               <div className="no-orders-icon">📋</div>
               <p>No orders yet. Place your first bulk order!</p>

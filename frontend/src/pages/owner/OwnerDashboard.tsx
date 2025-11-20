@@ -9,9 +9,10 @@ import { useAuth } from '../../contexts';
 import InventoryManagement from './InventoryManagement';
 import OrderManagement from './OrderManagement';
 import Analytics from './Analytics';
+import ProductManagement from './ProductManagement';
 import './OwnerDashboard.css';
 
-type DashboardView = 'overview' | 'inventory' | 'orders' | 'analytics';
+type DashboardView = 'overview' | 'products' | 'inventory' | 'orders' | 'analytics';
 
 const OwnerDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -19,6 +20,8 @@ const OwnerDashboard: React.FC = () => {
 
   const renderView = () => {
     switch (currentView) {
+      case 'products':
+        return <ProductManagement />;
       case 'inventory':
         return <InventoryManagement />;
       case 'orders':
@@ -34,6 +37,13 @@ const OwnerDashboard: React.FC = () => {
             </section>
 
             <div className="dashboard-cards">
+              <div className="dashboard-card" onClick={() => setCurrentView('products')}>
+                <div className="card-icon">🛍️</div>
+                <h3>Product Management</h3>
+                <p>Add and manage your product catalog</p>
+                <button className="card-button">Open →</button>
+              </div>
+
               <div className="dashboard-card" onClick={() => setCurrentView('inventory')}>
                 <div className="card-icon">📦</div>
                 <h3>Inventory Management</h3>
@@ -71,6 +81,12 @@ const OwnerDashboard: React.FC = () => {
               onClick={() => setCurrentView('overview')}
             >
               Overview
+            </button>
+            <button
+              className={currentView === 'products' ? 'active' : ''}
+              onClick={() => setCurrentView('products')}
+            >
+              Products
             </button>
             <button
               className={currentView === 'inventory' ? 'active' : ''}

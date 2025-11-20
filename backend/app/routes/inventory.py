@@ -43,6 +43,12 @@ async def get_inventory(
         # Convert to response format
         inventory_responses = []
         for item in inventory_list:
+            # Convert ObjectId to string
+            if "_id" in item and isinstance(item["_id"], ObjectId):
+                item["_id"] = str(item["_id"])
+            if "product_id" in item and isinstance(item["product_id"], ObjectId):
+                item["product_id"] = str(item["product_id"])
+            
             inventory_responses.append(InventoryResponse(**item))
         
         return InventoryListResponse(

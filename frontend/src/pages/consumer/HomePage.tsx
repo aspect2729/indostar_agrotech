@@ -94,8 +94,9 @@ const HomePage: React.FC = () => {
 
   const loadFeaturedProducts = async () => {
     try {
-      const response = await getProducts({ limit: 6, isActive: true });
-      setFeaturedProducts(response.data || []);
+      const response: any = await getProducts({ limit: 6, isActive: true });
+      // Backend returns {products: [...]} not {data: [...]}
+      setFeaturedProducts(response.products || response.data || []);
     } catch (error) {
       console.error('Failed to load featured products:', error);
       setFeaturedProducts([]);

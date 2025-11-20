@@ -85,8 +85,9 @@ const ProductCatalog: React.FC = () => {
         params.search = searchQuery.trim();
       }
 
-      const response = await getProducts(params);
-      setProducts(response.data || []);
+      const response: any = await getProducts(params);
+      // Backend returns {products: [...]} not {data: [...]}
+      setProducts(response.products || response.data || []);
       setTotal(response.total || 0);
       setHasMore(response.hasMore || false);
     } catch (error) {

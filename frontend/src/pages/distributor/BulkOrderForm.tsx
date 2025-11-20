@@ -113,8 +113,10 @@ const BulkOrderForm: React.FC = () => {
         limit: 100
       });
       
-      const bulkProducts = response.data.filter(
-        p => p.category === 'jaggery' || p.category === 'oil'
+      // Backend returns {products: [...]} not {data: [...]}
+      const allProducts = (response as any).products || (response as any).data || [];
+      const bulkProducts = allProducts.filter(
+        (p: any) => p.category === 'jaggery' || p.category === 'oil'
       );
       setProducts(bulkProducts);
     } catch (error) {

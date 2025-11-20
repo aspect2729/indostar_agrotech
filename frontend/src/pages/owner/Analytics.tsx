@@ -60,8 +60,8 @@ const Analytics: React.FC = () => {
         getProducts({}),
       ]);
 
-      setOrders(ordersData.data);
-      setProducts(productsData.data);
+      setOrders(ordersData.data || []);
+      setProducts(productsData.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load analytics data');
     } finally {
@@ -71,7 +71,7 @@ const Analytics: React.FC = () => {
 
   // Calculate overall metrics
   const calculateMetrics = () => {
-    const completedOrders = orders.filter(o => o.status !== 'cancelled');
+    const completedOrders = (orders || []).filter(o => o.status !== 'cancelled');
     const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total, 0);
     const totalOrders = completedOrders.length;
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
@@ -105,13 +105,13 @@ const Analytics: React.FC = () => {
     });
 
     // Create product map for quick lookup
-    const productMap = new Map(products.map(p => [p._id, p]));
+    const productMap = new Map((products || []).map(p => [p._id, p]));
 
     // Calculate stats from orders
-    orders
+    (orders || [])
       .filter(o => o.status !== 'cancelled')
       .forEach(order => {
-        order.items.forEach(item => {
+        (order.items || []).forEach(item => {
           const product = productMap.get(item.productId);
           if (product) {
             const stats = categoryMap.get(product.category);
@@ -124,11 +124,11 @@ const Analytics: React.FC = () => {
       });
 
     // Count orders per category
-    orders
+    (orders || [])
       .filter(o => o.status !== 'cancelled')
       .forEach(order => {
         const categoriesInOrder = new Set<ProductCategory>();
-        order.items.forEach(item => {
+        (order.items || []).forEach(item => {
           const product = productMap.get(item.productId);
           if (product) {
             categoriesInOrder.add(product.category);
@@ -150,13 +150,13 @@ const Analytics: React.FC = () => {
     const productStatsMap = new Map<string, ProductStats>();
 
     // Create product map
-    const productMap = new Map(products.map(p => [p._id, p]));
+    const productMap = new Map((products || []).map(p => [p._id, p]));
 
     // Calculate stats from orders
-    orders
+    (orders || [])
       .filter(o => o.status !== 'cancelled')
       .forEach(order => {
-        order.items.forEach(item => {
+        (order.items || []).forEach(item => {
           const product = productMap.get(item.productId);
           if (product) {
             if (!productStatsMap.has(item.productId)) {
@@ -199,7 +199,7 @@ const Analytics: React.FC = () => {
     }
 
     // Aggregate data
-    orders
+    (orders || [])
       .filter(o => o.status !== 'cancelled')
       .forEach(order => {
         const orderDate = new Date(order.createdAt).toISOString().split('T')[0];

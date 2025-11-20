@@ -113,7 +113,7 @@ async def create_database_indexes() -> None:
         
         # Users collection indexes
         await db.users.create_index("email", unique=True)
-        await db.users.create_index("googleId", unique=True)
+        await db.users.create_index("google_id", unique=True, sparse=True)
         await db.users.create_index("role")
         logger.info("Created indexes for users collection")
         

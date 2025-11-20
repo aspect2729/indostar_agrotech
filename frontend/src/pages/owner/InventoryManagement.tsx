@@ -57,10 +57,10 @@ const InventoryManagement: React.FC = () => {
       ]);
 
       // Create a map of products for quick lookup
-      const productMap = new Map(productsData.data.map(p => [p._id, p]));
+      const productMap = new Map((productsData.data || []).map(p => [p._id, p]));
 
       // Merge inventory with product data
-      const inventoryWithProducts = inventoryData.data.map(inv => ({
+      const inventoryWithProducts = (inventoryData.data || []).map(inv => ({
         ...inv,
         product: productMap.get(inv.productId),
       }));
@@ -148,11 +148,11 @@ const InventoryManagement: React.FC = () => {
       </div>
 
       {/* Low Stock Alerts */}
-      {lowStockAlerts.length > 0 && (
+      {(lowStockAlerts?.length || 0) > 0 && (
         <div className="low-stock-alerts">
-          <h3>⚠️ Low Stock Alerts ({lowStockAlerts.length})</h3>
+          <h3>⚠️ Low Stock Alerts ({lowStockAlerts?.length || 0})</h3>
           <div className="alerts-list">
-            {lowStockAlerts.map(alert => (
+            {(lowStockAlerts || []).map(alert => (
               <div key={alert.product._id} className="alert-item">
                 <span className="alert-product">{alert.product.name}</span>
                 <span className="alert-quantity">
@@ -208,14 +208,14 @@ const InventoryManagement: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredInventory.length === 0 ? (
+            {(filteredInventory?.length || 0) === 0 ? (
               <tr>
                 <td colSpan={7} className="no-data">
                   No inventory items found
                 </td>
               </tr>
             ) : (
-              filteredInventory.map(inv => (
+              (filteredInventory || []).map(inv => (
                 <tr key={inv.productId} className={inv.isLowStock ? 'low-stock-row' : ''}>
                   <td className="product-name">
                     {inv.product?.name || 'Unknown Product'}
@@ -302,22 +302,22 @@ const InventoryManagement: React.FC = () => {
       <div className="inventory-summary">
         <div className="summary-card">
           <h4>Total Products</h4>
-          <p className="summary-value">{inventory.length}</p>
+          <p className="summary-value">{inventory?.length || 0}</p>
         </div>
         <div className="summary-card">
           <h4>Low Stock Items</h4>
-          <p className="summary-value warning">{lowStockAlerts.length}</p>
+          <p className="summary-value warning">{lowStockAlerts?.length || 0}</p>
         </div>
         <div className="summary-card">
           <h4>Out of Stock</h4>
           <p className="summary-value danger">
-            {inventory.filter(inv => inv.isOutOfStock).length}
+            {(inventory || []).filter(inv => inv.isOutOfStock).length}
           </p>
         </div>
         <div className="summary-card">
           <h4>In Stock</h4>
           <p className="summary-value success">
-            {inventory.filter(inv => !inv.isLowStock && !inv.isOutOfStock).length}
+            {(inventory || []).filter(inv => !inv.isLowStock && !inv.isOutOfStock).length}
           </p>
         </div>
       </div>

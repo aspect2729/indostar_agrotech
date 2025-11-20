@@ -56,7 +56,7 @@ const OrderManagement: React.FC = () => {
       if (userTypeFilter) params.userType = userTypeFilter;
 
       const response = await getOrders(params);
-      setOrders(response.data);
+      setOrders(response.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load orders');
     } finally {
@@ -126,7 +126,7 @@ const OrderManagement: React.FC = () => {
   };
 
   // Filter and sort orders
-  const filteredOrders = orders
+  const filteredOrders = (orders || [])
     .filter(order => {
       const matchesSearch = !searchTerm || 
         order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,13 +150,13 @@ const OrderManagement: React.FC = () => {
 
   // Calculate statistics
   const stats = {
-    total: orders.length,
-    pending: orders.filter(o => o.status === 'pending').length,
-    processing: orders.filter(o => o.status === 'processing' || o.status === 'confirmed').length,
-    shipped: orders.filter(o => o.status === 'shipped').length,
-    delivered: orders.filter(o => o.status === 'delivered').length,
-    cancelled: orders.filter(o => o.status === 'cancelled').length,
-    totalRevenue: orders
+    total: orders?.length || 0,
+    pending: orders?.filter(o => o.status === 'pending').length || 0,
+    processing: orders?.filter(o => o.status === 'processing' || o.status === 'confirmed').length || 0,
+    shipped: orders?.filter(o => o.status === 'shipped').length || 0,
+    delivered: orders?.filter(o => o.status === 'delivered').length || 0,
+    cancelled: orders?.filter(o => o.status === 'cancelled').length || 0,
+    totalRevenue: (orders || [])
       .filter(o => o.status !== 'cancelled')
       .reduce((sum, o) => sum + o.total, 0),
   };
