@@ -47,22 +47,25 @@ const DevLogin: React.FC = () => {
       };
       localStorage.setItem('indostar_user', JSON.stringify(user));
 
-      // Update auth context
+      // Update auth context and wait for it to complete
       updateUser(user);
+
+      // Small delay to ensure auth context is updated before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect based on role
       switch (userRole) {
         case 'consumer':
-          navigate('/consumer/home');
+          navigate('/consumer/home', { replace: true });
           break;
         case 'distributor':
-          navigate('/distributor/dashboard');
+          navigate('/distributor/dashboard', { replace: true });
           break;
         case 'owner':
-          navigate('/owner/dashboard');
+          navigate('/owner/dashboard', { replace: true });
           break;
         default:
-          navigate('/');
+          navigate('/', { replace: true });
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed');

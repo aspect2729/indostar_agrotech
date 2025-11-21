@@ -7,7 +7,7 @@
  * Implements requirements: 2.1, 2.2, 2.5, 9.1, 9.2
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { getProducts, createOrder } from '../../services';
@@ -93,6 +93,15 @@ const BulkOrderForm: React.FC = () => {
     loadProducts();
   }, []);
 
+  const addProductToOrder = useCallback((product: Product) => {
+    setOrderItems(prevItems => {
+      if (!prevItems.find(item => item.product._id === product._id)) {
+        return [...prevItems, { product, quantity: 10 }]; // Default bulk quantity
+      }
+      return prevItems;
+    });
+  }, []);
+
   useEffect(() => {
     // Pre-select product if provided in URL
     const productId = searchParams.get('product');
@@ -102,7 +111,7 @@ const BulkOrderForm: React.FC = () => {
         addProductToOrder(product);
       }
     }
-  }, [searchParams, products]);
+  }, [searchParams, products, addProductToOrder, orderItems]);
 
   const loadProducts = async () => {
     setLoading(true);
@@ -123,12 +132,6 @@ const BulkOrderForm: React.FC = () => {
       console.error('Failed to load products:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const addProductToOrder = (product: Product) => {
-    if (!orderItems.find(item => item.product._id === product._id)) {
-      setOrderItems([...orderItems, { product, quantity: 10 }]); // Default bulk quantity
     }
   };
 

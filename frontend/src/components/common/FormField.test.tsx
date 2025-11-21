@@ -83,7 +83,7 @@ describe('FormField Component', () => {
     });
 
     it('should show error validation icon', () => {
-      const { container } = render(
+      render(
         <FormField
           label="Email"
           type="email"
@@ -93,13 +93,13 @@ describe('FormField Component', () => {
         />
       );
 
-      const errorIcon = container.querySelector('.validation-icon.error');
+      const errorIcon = screen.getByText('✕');
       expect(errorIcon).toBeInTheDocument();
-      expect(errorIcon?.textContent).toBe('✕');
+      expect(errorIcon).toHaveClass('validation-icon', 'error');
     });
 
     it('should show success validation icon', () => {
-      const { container } = render(
+      render(
         <FormField
           label="Email"
           type="email"
@@ -109,13 +109,13 @@ describe('FormField Component', () => {
         />
       );
 
-      const successIcon = container.querySelector('.validation-icon.success');
+      const successIcon = screen.getByText('✓');
       expect(successIcon).toBeInTheDocument();
-      expect(successIcon?.textContent).toBe('✓');
+      expect(successIcon).toHaveClass('validation-icon', 'success');
     });
 
     it('should apply error class when error exists', () => {
-      const { container } = render(
+      render(
         <FormField
           label="Email"
           type="email"
@@ -125,12 +125,12 @@ describe('FormField Component', () => {
         />
       );
 
-      const input = container.querySelector('input');
+      const input = screen.getByRole('textbox');
       expect(input).toHaveClass('error');
     });
 
     it('should apply success class when success is true', () => {
-      const { container } = render(
+      render(
         <FormField
           label="Email"
           type="email"
@@ -140,7 +140,7 @@ describe('FormField Component', () => {
         />
       );
 
-      const input = container.querySelector('input');
+      const input = screen.getByRole('textbox');
       expect(input).toHaveClass('success');
     });
 
@@ -290,7 +290,7 @@ describe('FormField Component', () => {
     });
 
     it('should render password input type', () => {
-      const { container } = render(
+      render(
         <FormField
           label="Password"
           type="password"
@@ -299,8 +299,8 @@ describe('FormField Component', () => {
         />
       );
 
-      const input = container.querySelector('input[type="password"]');
-      expect(input).toBeInTheDocument();
+      const input = screen.getByLabelText('Password');
+      expect(input).toHaveAttribute('type', 'password');
     });
   });
 
@@ -333,8 +333,9 @@ describe('FormField Component', () => {
         />
       );
 
-      const formField = container.querySelector('.form-field');
-      expect(formField).toHaveClass('custom-class');
+      // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
+      const formField = container.querySelector('.form-field.custom-class');
+      expect(formField).toBeInTheDocument();
     });
 
     it('should use custom id', () => {

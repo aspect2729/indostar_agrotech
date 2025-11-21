@@ -9,7 +9,7 @@
  * - Show order fulfillment workflow
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getOrders, updateOrderStatus, getOrderById } from '../../services/orderService';
 import {
   Order,
@@ -42,11 +42,7 @@ const OrderManagement: React.FC = () => {
   const [sortBy, setSortBy] = useState<'date' | 'total' | 'status'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  useEffect(() => {
-    loadOrders();
-  }, []);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -62,7 +58,11 @@ const OrderManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, userTypeFilter]);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     try {

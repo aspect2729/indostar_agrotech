@@ -58,12 +58,6 @@ export const useFormValidation = <T extends Record<string, any>>({
     }
   }, [errors]);
 
-  // Handle field blur
-  const handleBlur = useCallback((field: keyof T) => {
-    setTouched((prev) => ({ ...prev, [field as string]: true }));
-    validateField(field);
-  }, [values]);
-
   // Validate single field
   const validateField = useCallback((field: keyof T): boolean => {
     const validationResult = validate(values);
@@ -83,6 +77,12 @@ export const useFormValidation = <T extends Record<string, any>>({
       return true;
     }
   }, [values, validate]);
+
+  // Handle field blur
+  const handleBlur = useCallback((field: keyof T) => {
+    setTouched((prev) => ({ ...prev, [field as string]: true }));
+    validateField(field);
+  }, [validateField]);
 
   // Validate entire form
   const validateForm = useCallback((): boolean => {

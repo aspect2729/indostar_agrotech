@@ -8,7 +8,7 @@
  * Integrates Google OAuth and redirects based on user role.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { initiateGoogleAuth, loginWithEmail, registerWithEmail } from '../services/authService';
@@ -30,27 +30,10 @@ const LoginPage: React.FC = () => {
     role: 'consumer' as 'consumer' | 'distributor' | 'owner'
   });
 
-  // Handle OAuth callback
-  useEffect(() => {
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
-
-    if (code && state && !isAuthenticating) {
-      handleOAuthCallback(code, state);
-    }
-  }, [searchParams]);
-
-  // Redirect authenticated users
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      redirectBasedOnRole(user.role);
-    }
-  }, [isAuthenticated, user]);
-
   /**
    * Handle OAuth callback
    */
-  const handleOAuthCallback = async (code: string, state: string) => {
+  const handleOAuthCallback = useCallback(async (code: string, state: string) => {
     setIsAuthenticating(true);
     setAuthError(null);
 
@@ -61,12 +44,12 @@ const LoginPage: React.FC = () => {
       setAuthError(errorMessage);
       setIsAuthenticating(false);
     }
-  };
+  }, [login]);
 
   /**
    * Redirect user based on role
    */
-  const redirectBasedOnRole = (role: string) => {
+  const redirectBasedOnRole = useCallback((role: string) => {
     switch (role) {
       case 'consumer':
         navigate('/consumer/home');
@@ -80,7 +63,24 @@ const LoginPage: React.FC = () => {
       default:
         navigate('/');
     }
-  };
+  }, [navigate]);
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+
+    if (code && state && !isAuthenticating) {
+      handleOAuthCallback(code, state);
+    }
+  }, [searchParams, handleOAuthCallback, isAuthenticating]);
+
+  // Redirect authenticated users
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      redirectBasedOnRole(user.role);
+    }
+  }, [isAuthenticated, user, redirectBasedOnRole]);
 
   /**
    * Initiate Google OAuth flow

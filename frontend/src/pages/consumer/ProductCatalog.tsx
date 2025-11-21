@@ -5,7 +5,7 @@
  * Implements requirements: 1.1, 8.1, 8.2, 8.3, 8.5, 7.1, 7.2
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { getProducts } from '../../services';
@@ -36,39 +36,7 @@ const ProductCatalog: React.FC = () => {
   
   const ITEMS_PER_PAGE = 12;
 
-  useEffect(() => {
-    // Get category from URL params
-    const categoryParam = searchParams.get('category');
-    if (categoryParam && categoryParam !== 'all') {
-      setSelectedCategory(categoryParam as ProductCategory);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    loadProducts();
-  }, [selectedCategory, searchQuery, page]);
-
-  useEffect(() => {
-    // Setup scroll reveal animation
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    document.querySelectorAll('.scroll-reveal').forEach((el) => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [products]);
-
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params: any = {
@@ -95,7 +63,39 @@ const ProductCatalog: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, selectedCategory, searchQuery]);
+
+  useEffect(() => {
+    // Get category from URL params
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && categoryParam !== 'all') {
+      setSelectedCategory(categoryParam as ProductCategory);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+
+  useEffect(() => {
+    // Setup scroll reveal animation
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    document.querySelectorAll('.scroll-reveal').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [products]);
 
   const handleCategoryChange = (category: ProductCategory | 'all') => {
     setSelectedCategory(category);

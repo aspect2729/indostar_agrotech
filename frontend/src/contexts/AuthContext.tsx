@@ -182,21 +182,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Update user profile
    */
   const updateUser = useCallback((updates: Partial<User>) => {
-    setUser(prevUser => {
-      if (!prevUser) return null;
+    // If updates is a complete user object (has _id), use it directly
+    const updatedUser = updates._id ? {
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    } as User : {
+      ...user,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    } as User;
 
-      const updatedUser = {
-        ...prevUser,
-        ...updates,
-        updatedAt: new Date().toISOString(),
-      };
+    // Update state immediately
+    setUser(updatedUser);
 
-      // Persist to localStorage
-      setStoredUser(updatedUser);
+    // Persist to localStorage
+    setStoredUser(updatedUser);
 
-      return updatedUser;
-    });
-  }, []);
+    // Also ensure tokens are in state if they exist in localStorage
+    const token = getAuthToken();
+    const refresh = getRefreshToken();
+    if (token) {
+      setAccessTokenState(token);
+    }
+    if (refresh) {
+      setRefreshTokenState(refresh);
+    }
+
+    // Ensure loading is false
+    setIsLoading(false);
+
+    logger.info('User updated', {
+      userId: updatedUser._id,
+      role: updatedUser.role,
+      email: updatedUser.email
+    }, 'Auth');
+  }, [user]);
 
   const value: AuthContextType = {
     user,

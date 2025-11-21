@@ -127,14 +127,11 @@ describe('AuthContext', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      try {
+      await expect(async () => {
         await act(async () => {
           await result.current.login('auth-code', 'state');
         });
-        fail('Should have thrown an error');
-      } catch (err) {
-        expect((err as Error).message).toBe('Login failed');
-      }
+      }).rejects.toThrow('Login failed');
       
       expect(result.current.user).toBeNull();
     });

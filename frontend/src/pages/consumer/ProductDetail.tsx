@@ -5,7 +5,7 @@
  * Implements requirements: 1.2, 8.4, 9.5, 7.2
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth, useCart } from '../../contexts';
 import { getProductById } from '../../services';
@@ -25,13 +25,7 @@ const ProductDetail: React.FC = () => {
   const [addingToCart, setAddingToCart] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  useEffect(() => {
-    if (productId) {
-      loadProduct();
-    }
-  }, [productId]);
-
-  const loadProduct = async () => {
+  const loadProduct = useCallback(async () => {
     if (!productId) return;
     
     setLoading(true);
@@ -43,7 +37,13 @@ const ProductDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId]);
+
+  useEffect(() => {
+    if (productId) {
+      loadProduct();
+    }
+  }, [productId, loadProduct]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
