@@ -270,10 +270,22 @@ async def register_with_email(request: EmailRegisterRequest):
             detail=str(e)
         )
     except Exception as e:
-        logger.error(f"Error registering user: {str(e)}")
+        error_msg = str(e)
+        logger.error(f"Error registering user: {error_msg}")
+        
+        # Provide more specific error messages for common issues
+        if "E11000" in error_msg and "google_id" in error_msg:
+            detail = "Database index error. Please try again in a moment."
+        elif "E11000" in error_msg and "email" in error_msg:
+            detail = "Email already registered"
+        elif "bcrypt" in error_msg.lower():
+            detail = "Password encryption error. Please contact support."
+        else:
+            detail = f"Registration failed: {error_msg}"
+        
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Registration failed"
+            detail=detail
         )
 
 
