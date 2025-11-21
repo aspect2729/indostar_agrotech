@@ -75,3 +75,34 @@ export const logout = async (): Promise<LogoutResponse> => {
     throw new Error(handleApiError(error));
   }
 };
+
+
+/**
+ * Register with email and password
+ */
+export const registerWithEmail = async (data: {
+  email: string;
+  password: string;
+  name: string;
+  role: string;
+  phone?: string;
+}): Promise<any> => {
+  const response = await api.post('/api/auth/register/email', data);
+  return response.data;
+};
+
+/**
+ * Login with email and password
+ */
+export const loginWithEmail = async (email: string, password: string): Promise<any> => {
+  const response = await api.post('/api/auth/login/email', { email, password });
+  return response.data;
+};
+
+/**
+ * Login with phone and password
+ */
+export const loginWithPhone = async (phone: string, password: string): Promise<any> => {
+  const response = await api.post('/api/auth/login/phone', { phone, password });
+  return response.data;
+};

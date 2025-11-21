@@ -18,7 +18,10 @@ from app.schemas.auth import (
     GoogleAuthCallbackRequest,
     TokenResponse,
     RefreshTokenRequest,
-    LogoutResponse
+    LogoutResponse,
+    EmailRegisterRequest,
+    EmailLoginRequest,
+    PhoneLoginRequest
 )
 from app.services.auth_service import auth_service
 from app.services.token_service import token_service
@@ -240,4 +243,105 @@ async def logout(current_user: User = Depends(get_current_user)):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Logout failed: {str(e)}"
+        )
+
+
+
+@router.post("/register/email", response_model=TokenResponse)
+async def register_with_email(request: EmailRegisterRequest):
+    """Register a new user with email and password."""
+    try:
+        user = await auth_service.register_user_with_email(
+            email=request.email,
+            password=request.password,
+            name=request.name,
+            role=request.role,
+            phone=request.phone
+        )
+        
+        token_data = token_service.create_token_pair(user)
+        logger.info(f"User registered with email: {request.email}")
+        
+        return TokenResponse(**token_data)
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Error registering user: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Registration failed"
+        )
+
+
+@router.post("/login/email", response_model=TokenResponse)
+async def login_with_email(request: EmailLoginRequest):
+    """Login with email and password."""
+    try:
+        user = await auth_service.authenticate_with_email(
+            email=request.email,
+            password=request.password
+        )
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        token_data = token_service.create_token_pair(user)
+        logger.info(f"User logged in with email: {request.email}")
+        
+        return TokenResponse(**token_data)
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error logging in: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed"
+        )
+
+
+@router.post("/login/phone", response_model=TokenResponse)
+async def login_with_phone(request: PhoneLoginRequest):
+    """Login with phone and password."""
+    try:
+        user = await auth_service.authenticate_with_phone(
+            phone=request.phone,
+            password=request.password
+        )
+        
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid phone or password"
+            )
+        
+        token_data = token_service.create_token_pair(user)
+        logger.info(f"User logged in with phone: {request.phone}")
+        
+        return TokenResponse(**token_data)
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error logging in: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Login failed"
         )

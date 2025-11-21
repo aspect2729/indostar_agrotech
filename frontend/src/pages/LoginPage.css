@@ -442,3 +442,113 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* Auth Mode Toggle */
+.auth-mode-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.mode-button {
+  padding: 10px 30px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mode-button.active {
+  background: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+.mode-button:hover:not(.active) {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+/* Email Auth Form */
+.email-auth-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  background: #f5f5f5;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.form-toggle button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.form-toggle button.active {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.email-auth-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.email-auth-form input,
+.email-auth-form select {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.email-auth-form input:focus,
+.email-auth-form select:focus {
+  outline: none;
+  border-color: #2e7d32;
+}
+
+.submit-button {
+  padding: 12px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #1b5e20;
+}
+
+.submit-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

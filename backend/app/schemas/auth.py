@@ -80,3 +80,51 @@ class LogoutResponse(BaseModel):
                 "message": "Successfully logged out"
             }
         }
+
+
+class EmailRegisterRequest(BaseModel):
+    """Request schema for email registration."""
+    email: str = Field(..., description="User email")
+    password: str = Field(..., min_length=8, max_length=100, description="User password")
+    name: str = Field(..., min_length=1, max_length=100, description="User name")
+    role: Literal["consumer", "distributor", "owner"] = Field(..., description="User role")
+    phone: str | None = Field(None, description="User phone number")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "email": "user@example.com",
+                "password": "SecurePass123!",
+                "name": "John Doe",
+                "role": "consumer",
+                "phone": "+919876543210"
+            }
+        }
+
+
+class EmailLoginRequest(BaseModel):
+    """Request schema for email login."""
+    email: str = Field(..., description="User email")
+    password: str = Field(..., description="User password")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "email": "user@example.com",
+                "password": "SecurePass123!"
+            }
+        }
+
+
+class PhoneLoginRequest(BaseModel):
+    """Request schema for phone login."""
+    phone: str = Field(..., pattern=r"^\+?[1-9]\d{9,14}$", description="User phone number")
+    password: str = Field(..., description="User password")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "phone": "+919876543210",
+                "password": "SecurePass123!"
+            }
+        }

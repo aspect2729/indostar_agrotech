@@ -254,5 +254,80 @@ class AuthService:
             return User(**user_data)
 
 
+    async def register_user_with_email(
+        self,
+        email: str,
+        password: str,
+        name: str,
+        role: str,
+        phone: Optional[str] = None
+    ) -> User:
+        """Register a new user with email and password."""
+        from app.utils.password import hash_password
+        
+        users_collection = get_users_collection()
+        
+        # Check if user already exists
+        existing_user = await users_collection.find_one({"email": email})
+        if existing_user:
+            raise ValueError("User with this email already exists")
+        
+        # Create user document
+        user_data = {
+            "email": email,
+            "password_hash": hash_password(password),
+            "name": name,
+            "role": role,
+            "phone": phone,
+            "google_id": None,
+            "addresses": [],
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        result = await users_collection.insert_one(user_data)
+        user_data["_id"] = result.inserted_id
+        
+        logger.info(f"New user registered with email: {email}")
+        return User(**user_data)
+    
+    async def authenticate_with_email(self, email: str, password: str) -> Optional[User]:
+        """Authenticate user with email and password."""
+        from app.utils.password import verify_password
+        
+        users_collection = get_users_collection()
+        
+        user_data = await users_collection.find_one({"email": email})
+        if not user_data:
+            return None
+        
+        if not user_data.get("password_hash"):
+            raise ValueError("This account uses Google login")
+        
+        if not verify_password(password, user_data["password_hash"]):
+            return None
+        
+        return User(**user_data)
+    
+    async def authenticate_with_phone(self, phone: str, password: str) -> Optional[User]:
+        """Authenticate user with phone and password."""
+        from app.utils.password import verify_password
+        
+        users_collection = get_users_collection()
+        
+        user_data = await users_collection.find_one({"phone": phone})
+        if not user_data:
+            return None
+        
+        if not user_data.get("password_hash"):
+            raise ValueError("This account uses Google login")
+        
+        if not verify_password(password, user_data["password_hash"]):
+            return None
+        
+        return User(**user_data)
+
+
 # Singleton instance
 auth_service = AuthService()
+

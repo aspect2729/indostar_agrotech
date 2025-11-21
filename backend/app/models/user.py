@@ -43,11 +43,12 @@ class Address(BaseModel):
 class User(BaseModel):
     """User model representing consumers, distributors, and owners."""
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
-    google_id: str = Field(..., min_length=1)
+    google_id: Optional[str] = Field(None, min_length=1)
     email: EmailStr
     name: str = Field(..., min_length=1, max_length=100)
     role: Literal["consumer", "distributor", "owner"]
     phone: Optional[str] = Field(None, pattern=r"^\+?[1-9]\d{9,14}$")
+    password_hash: Optional[str] = None
     addresses: List[Address] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
