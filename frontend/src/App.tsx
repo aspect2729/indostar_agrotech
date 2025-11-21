@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, CartProvider, useAuth } from './contexts';
 import { 
-  LoginPage,
   DevLogin,
   HomePage, 
   ProductCatalog, 
@@ -14,6 +13,7 @@ import {
   DistributorOrderHistory,
   OwnerDashboard 
 } from './pages';
+import OTPLoginPage from './pages/OTPLoginPage';
 import MilkSubscription from './pages/consumer/MilkSubscription';
 import CreateSubscription from './pages/consumer/CreateSubscription';
 import { ProtectedRoute, OfflineIndicator } from './components/common';
@@ -66,7 +66,7 @@ function App() {
             <Route path="/" element={<RoleBasedRedirect />} />
           
           {/* Public routes - no header */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<OTPLoginPage />} />
           <Route path="/dev-login" element={<DevLogin />} />
           
           {/* Consumer Portal Routes */}
