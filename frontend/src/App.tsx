@@ -15,6 +15,7 @@ import {
   OwnerDashboard 
 } from './pages';
 import { ProtectedRoute, OfflineIndicator } from './components/common';
+import Layout from './components/common/Layout';
 import { initAllScrollAnimations } from './utils/scrollAnimations';
 import './styles/App.css';
 
@@ -62,7 +63,7 @@ function App() {
             {/* Root route - redirects based on authentication and role */}
             <Route path="/" element={<RoleBasedRedirect />} />
           
-          {/* Public routes */}
+          {/* Public routes - no header */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dev-login" element={<DevLogin />} />
           
@@ -71,7 +72,9 @@ function App() {
             path="/consumer/home"
             element={
               <ProtectedRoute allowedRoles={['consumer']}>
-                <HomePage />
+                <Layout>
+                  <HomePage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -79,7 +82,9 @@ function App() {
             path="/consumer/products"
             element={
               <ProtectedRoute allowedRoles={['consumer']}>
-                <ProductCatalog />
+                <Layout>
+                  <ProductCatalog />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -87,7 +92,9 @@ function App() {
             path="/consumer/products/:productId"
             element={
               <ProtectedRoute allowedRoles={['consumer']}>
-                <ProductDetail />
+                <Layout>
+                  <ProductDetail />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -95,7 +102,9 @@ function App() {
             path="/consumer/cart"
             element={
               <ProtectedRoute allowedRoles={['consumer']}>
-                <Cart />
+                <Layout>
+                  <Cart />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -103,7 +112,9 @@ function App() {
             path="/consumer/orders"
             element={
               <ProtectedRoute allowedRoles={['consumer']}>
-                <OrderHistory />
+                <Layout>
+                  <OrderHistory />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -111,7 +122,9 @@ function App() {
             path="/consumer/orders/:orderId"
             element={
               <ProtectedRoute allowedRoles={['consumer']}>
-                <OrderHistory />
+                <Layout>
+                  <OrderHistory />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -121,7 +134,9 @@ function App() {
             path="/distributor/dashboard"
             element={
               <ProtectedRoute allowedRoles={['distributor']}>
-                <DistributorDashboard />
+                <Layout>
+                  <DistributorDashboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -129,7 +144,9 @@ function App() {
             path="/distributor/products"
             element={
               <ProtectedRoute allowedRoles={['distributor']}>
-                <DistributorDashboard />
+                <Layout>
+                  <DistributorDashboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -137,7 +154,9 @@ function App() {
             path="/distributor/bulk-order"
             element={
               <ProtectedRoute allowedRoles={['distributor']}>
-                <BulkOrderForm />
+                <Layout>
+                  <BulkOrderForm />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -145,7 +164,9 @@ function App() {
             path="/distributor/orders"
             element={
               <ProtectedRoute allowedRoles={['distributor']}>
-                <DistributorOrderHistory />
+                <Layout>
+                  <DistributorOrderHistory />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -153,7 +174,9 @@ function App() {
             path="/distributor/orders/:orderId"
             element={
               <ProtectedRoute allowedRoles={['distributor']}>
-                <DistributorOrderHistory />
+                <Layout>
+                  <DistributorOrderHistory />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -163,7 +186,9 @@ function App() {
             path="/owner/dashboard"
             element={
               <ProtectedRoute allowedRoles={['owner']}>
-                <OwnerDashboard />
+                <Layout>
+                  <OwnerDashboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
