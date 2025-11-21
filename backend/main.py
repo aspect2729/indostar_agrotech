@@ -49,10 +49,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS middleware
+# Configure CORS middleware with pattern matching for Vercel deployments
+def get_cors_origins():
+    """Get CORS origins including patterns for Vercel preview deployments."""
+    origins = settings.cors_origins_list.copy()
+    
+    # Add pattern for all Vercel preview deployments
+    # Note: FastAPI CORS doesn't support regex, so we'll use allow_origin_regex
+    return origins
+
+# Use allow_origin_regex to match all Vercel deployment URLs
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
+    allow_origins=get_cors_origins(),
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Matches all Vercel deployments
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
