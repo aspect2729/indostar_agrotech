@@ -111,6 +111,20 @@ const LoginPage: React.FC = () => {
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
+
+    // Validate required fields
+    if (!formData.email || !formData.password) {
+      setAuthError('Please enter email and password');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setAuthError('Please enter a valid email address');
+      return;
+    }
+
     setIsAuthenticating(true);
 
     try {
@@ -140,6 +154,26 @@ const LoginPage: React.FC = () => {
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError(null);
+
+    // Validate required fields
+    if (!formData.email || !formData.password || !formData.name) {
+      setAuthError('Please fill in all required fields');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setAuthError('Please enter a valid email address');
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 8) {
+      setAuthError('Password must be at least 8 characters long');
+      return;
+    }
+
     setIsAuthenticating(true);
 
     try {
