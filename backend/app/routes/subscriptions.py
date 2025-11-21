@@ -28,7 +28,7 @@ async def create_subscription(
     """Create a new milk subscription (consumer only)"""
     service = SubscriptionService(db)
     subscription = await service.create_subscription(
-        user_id=current_user["_id"],
+        user_id=str(current_user._id),
         subscription_data=subscription_data
     )
     return subscription
@@ -41,7 +41,7 @@ async def get_my_subscriptions(
 ):
     """Get all subscriptions for current user"""
     service = SubscriptionService(db)
-    subscriptions = await service.get_user_subscriptions(current_user["_id"])
+    subscriptions = await service.get_user_subscriptions(str(current_user._id))
     return subscriptions
 
 
@@ -53,7 +53,7 @@ async def get_subscription(
 ):
     """Get a specific subscription"""
     service = SubscriptionService(db)
-    subscription = await service.get_subscription(subscription_id, current_user["_id"])
+    subscription = await service.get_subscription(subscription_id, str(current_user._id))
     return subscription
 
 
@@ -68,7 +68,7 @@ async def update_subscription(
     service = SubscriptionService(db)
     subscription = await service.update_subscription(
         subscription_id=subscription_id,
-        user_id=current_user["_id"],
+        user_id=str(current_user._id),
         update_data=update_data
     )
     return subscription
@@ -88,7 +88,7 @@ async def adjust_daily_quantity(
     service = SubscriptionService(db)
     subscription = await service.adjust_daily_quantity(
         subscription_id=subscription_id,
-        user_id=current_user["_id"],
+        user_id=str(current_user._id),
         adjustment=adjustment
     )
     return subscription
@@ -108,7 +108,7 @@ async def get_monthly_bill(
     service = SubscriptionService(db)
     bill = await service.get_monthly_bill(
         subscription_id=subscription_id,
-        user_id=current_user["_id"],
+        user_id=str(current_user._id),
         month=month
     )
     return bill
@@ -122,7 +122,7 @@ async def pause_subscription(
 ):
     """Pause a subscription"""
     service = SubscriptionService(db)
-    subscription = await service.pause_subscription(subscription_id, current_user["_id"])
+    subscription = await service.pause_subscription(subscription_id, str(current_user._id))
     return subscription
 
 
@@ -134,7 +134,7 @@ async def resume_subscription(
 ):
     """Resume a paused subscription"""
     service = SubscriptionService(db)
-    subscription = await service.resume_subscription(subscription_id, current_user["_id"])
+    subscription = await service.resume_subscription(subscription_id, str(current_user._id))
     return subscription
 
 
@@ -146,7 +146,7 @@ async def cancel_subscription(
 ):
     """Cancel a subscription"""
     service = SubscriptionService(db)
-    subscription = await service.cancel_subscription(subscription_id, current_user["_id"])
+    subscription = await service.cancel_subscription(subscription_id, str(current_user._id))
     return subscription
 
 
