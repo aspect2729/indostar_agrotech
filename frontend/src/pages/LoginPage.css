@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #31694E 0%, #658C58 50%, #BBC863 100%);
   position: relative;
   overflow: hidden;
   padding: 20px;
@@ -82,7 +82,7 @@
   font-weight: 700;
   color: #1a202c;
   margin: 0 0 8px 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #31694E 0%, #658C58 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -153,7 +153,7 @@
 .login-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  border-color: #667eea;
+  border-color: #658C58;
 }
 
 .card-icon {
@@ -213,19 +213,19 @@
 }
 
 .customer-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #658C58 0%, #31694E 100%);
 }
 
 .customer-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+  background: linear-gradient(135deg, #5a7a4d 0%, #2a5c43 100%);
 }
 
 .business-button {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #BBC863 0%, #658C58 100%);
 }
 
 .business-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #d97ce0 0%, #dc4a5d 100%);
+  background: linear-gradient(135deg, #a8b556 0%, #5a7a4d 100%);
 }
 
 .button-icon {
@@ -252,7 +252,7 @@
 }
 
 .feature-icon {
-  color: #48bb78;
+  color: #658C58;
   font-weight: bold;
 }
 
@@ -464,14 +464,14 @@
 }
 
 .mode-button.active {
-  background: #2e7d32;
+  background: #658C58;
   color: white;
-  border-color: #2e7d32;
+  border-color: #658C58;
 }
 
 .mode-button:hover:not(.active) {
-  border-color: #2e7d32;
-  color: #2e7d32;
+  border-color: #658C58;
+  color: #658C58;
 }
 
 /* Email Auth Form */
@@ -528,12 +528,12 @@
 .email-auth-form input:focus,
 .email-auth-form select:focus {
   outline: none;
-  border-color: #2e7d32;
+  border-color: #658C58;
 }
 
 .submit-button {
   padding: 12px;
-  background: #2e7d32;
+  background: #658C58;
   color: white;
   border: none;
   border-radius: 8px;
@@ -545,7 +545,7 @@
 }
 
 .submit-button:hover:not(:disabled) {
-  background: #1b5e20;
+  background: #31694E;
 }
 
 .submit-button:disabled {
