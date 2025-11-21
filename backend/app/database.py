@@ -112,6 +112,18 @@ async def create_database_indexes() -> None:
         logger.info("Creating database indexes...")
         
         # Users collection indexes
+        # First, try to drop the old non-sparse google_id index if it exists
+        try:
+            existing_indexes = await db.users.list_indexes().to_list(length=None)
+            for idx in existing_indexes:
+                if idx.get('name') == 'google_id_1' and not idx.get('sparse', False):
+                    logger.info("Dropping old non-sparse google_id index...")
+                    await db.users.drop_index("google_id_1")
+                    logger.info("Dropped old google_id index")
+                    break
+        except Exception as e:
+            logger.warning(f"Could not check/drop old google_id index: {str(e)}")
+        
         await db.users.create_index("email", unique=True)
         await db.users.create_index("google_id", unique=True, sparse=True)
         await db.users.create_index("role")
