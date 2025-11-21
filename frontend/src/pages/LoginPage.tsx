@@ -139,8 +139,11 @@ const LoginPage: React.FC = () => {
         role: response.role
       }));
       
-      // Redirect based on role
-      redirectBasedOnRole(response.role);
+      // Hard redirect to force page reload and pick up auth state
+      const redirectPath = response.role === 'consumer' ? '/consumer/home' :
+                          response.role === 'distributor' ? '/distributor/dashboard' :
+                          response.role === 'owner' ? '/owner/dashboard' : '/';
+      window.location.href = redirectPath;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setAuthError(errorMessage);
@@ -195,8 +198,11 @@ const LoginPage: React.FC = () => {
         role: response.role
       }));
       
-      // Redirect based on role
-      redirectBasedOnRole(response.role);
+      // Hard redirect to force page reload and pick up auth state
+      const redirectPath = response.role === 'consumer' ? '/consumer/home' :
+                          response.role === 'distributor' ? '/distributor/dashboard' :
+                          response.role === 'owner' ? '/owner/dashboard' : '/';
+      window.location.href = redirectPath;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Registration failed';
       setAuthError(errorMessage);
