@@ -14,7 +14,7 @@ from app.schemas.subscription import (
     SubscriptionResponse,
     MonthlyBillResponse
 )
-from app.utils.dependencies import get_current_user, require_role
+from app.utils.dependencies import get_current_user, require_owner
 
 router = APIRouter(prefix="/api/subscriptions", tags=["subscriptions"])
 
@@ -154,7 +154,7 @@ async def cancel_subscription(
 @router.get("/admin/all", response_model=List[SubscriptionResponse])
 async def get_all_subscriptions(
     status: Optional[str] = Query(None, regex="^(active|paused|cancelled)$"),
-    current_user: dict = Depends(require_role("owner")),
+    current_user: dict = Depends(require_owner),
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
     """Get all subscriptions (owner only)"""
@@ -167,7 +167,7 @@ async def get_all_subscriptions(
 async def mark_delivery_completed(
     subscription_id: str,
     date: str,  # YYYY-MM-DD format
-    current_user: dict = Depends(require_role("owner")),
+    current_user: dict = Depends(require_owner),
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
     """Mark a delivery as completed (owner only)"""
