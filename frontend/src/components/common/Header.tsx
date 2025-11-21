@@ -67,6 +67,9 @@ const Header: React.FC = () => {
                 <div className="dropdown-item" onClick={() => navigate('/consumer/orders')}>
                   📦 Orders
                 </div>
+                <div className="dropdown-item" onClick={() => navigate('/consumer/subscriptions')}>
+                  🥛 Milk Subscriptions
+                </div>
               </div>
             )}
           </div>

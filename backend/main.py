@@ -95,7 +95,7 @@ async def root():
 
 
 # Include routers
-from app.routes import auth, products, inventory, orders, users, dev_auth, health
+from app.routes import auth, products, inventory, orders, users, dev_auth, health, subscriptions
 
 app.include_router(health.router, prefix="/api", tags=["Health & Monitoring"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -104,6 +104,7 @@ app.include_router(products.router, prefix="/api/products", tags=["Products"])
 app.include_router(inventory.router, prefix="/api/inventory", tags=["Inventory"])
 app.include_router(orders.router, prefix="/api/orders", tags=["Orders"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
+app.include_router(subscriptions.router, tags=["Subscriptions"])
 
 
 if __name__ == "__main__":

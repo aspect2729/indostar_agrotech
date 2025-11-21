@@ -307,6 +307,31 @@ const ProductDetail: React.FC = () => {
                 Buy Now
               </button>
             </div>
+
+            {/* Subscription Option for Milk Products */}
+            {product.category === 'milk' && (
+              <div className="subscription-section">
+                <div className="subscription-banner">
+                  <div className="subscription-icon">🥛</div>
+                  <div className="subscription-content">
+                    <h3>Daily Milk Subscription Available!</h3>
+                    <p>Get fresh milk delivered daily. Adjust quantities anytime, one day in advance.</p>
+                    <ul className="subscription-benefits">
+                      <li>✓ Daily fresh delivery</li>
+                      <li>✓ Flexible quantity adjustments</li>
+                      <li>✓ No payment required - monthly billing</li>
+                      <li>✓ Pause or cancel anytime</li>
+                    </ul>
+                    <button
+                      className="subscribe-btn hover-lift"
+                      onClick={() => navigate(`/consumer/subscribe/${product._id}`)}
+                    >
+                      Start Subscription
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

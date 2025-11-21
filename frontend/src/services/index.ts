@@ -21,3 +21,6 @@ export * from './inventoryService';
 
 // Export user service
 export * from './userService';
+
+// Export subscription service
+export * from './subscriptionService';

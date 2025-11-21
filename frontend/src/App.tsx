@@ -14,6 +14,8 @@ import {
   DistributorOrderHistory,
   OwnerDashboard 
 } from './pages';
+import MilkSubscription from './pages/consumer/MilkSubscription';
+import CreateSubscription from './pages/consumer/CreateSubscription';
 import { ProtectedRoute, OfflineIndicator } from './components/common';
 import Layout from './components/common/Layout';
 import { initAllScrollAnimations } from './utils/scrollAnimations';
@@ -124,6 +126,26 @@ function App() {
               <ProtectedRoute allowedRoles={['consumer']}>
                 <Layout>
                   <OrderHistory />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/consumer/subscriptions"
+            element={
+              <ProtectedRoute allowedRoles={['consumer']}>
+                <Layout>
+                  <MilkSubscription />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/consumer/subscribe/:productId"
+            element={
+              <ProtectedRoute allowedRoles={['consumer']}>
+                <Layout>
+                  <CreateSubscription />
                 </Layout>
               </ProtectedRoute>
             }

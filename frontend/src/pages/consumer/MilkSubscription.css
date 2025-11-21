@@ -1,0 +1,514 @@
+/**
+ * Milk Subscription Page Styles
+ */
+
+.milk-subscription-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  color: #1a202c;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #718096;
+}
+
+.error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  color: #c53030;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-message button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #c53030;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f7fafc;
+  border-radius: 12px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h2 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: #718096;
+  margin-bottom: 2rem;
+}
+
+.subscriptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.subscription-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.subscription-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.subscription-card.paused {
+  opacity: 0.7;
+  border: 2px solid #f59e0b;
+}
+
+.subscription-card.cancelled {
+  opacity: 0.5;
+  border: 2px solid #ef4444;
+}
+
+.subscription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.subscription-header h3 {
+  font-size: 1.25rem;
+  color: #1a202c;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.paused {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.scheduled {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.delivered {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.skipped {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.subscription-details {
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f7fafc;
+}
+
+.detail-row .label {
+  color: #718096;
+  font-size: 0.875rem;
+}
+
+.detail-row .value {
+  color: #2d3748;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.subscription-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #658C58;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-top: 0.25rem;
+}
+
+.subscription-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.subscription-actions button {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #658C58;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #31694E;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.btn-secondary:hover {
+  background: #cbd5e0;
+}
+
+.btn-warning {
+  background: #fbbf24;
+  color: #78350f;
+}
+
+.btn-warning:hover {
+  background: #f59e0b;
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content.bill-modal {
+  max-width: 800px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  color: #1a202c;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #718096;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #2d3748;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.info-text {
+  background: #fef3c7;
+  padding: 0.75rem;
+  border-radius: 6px;
+  color: #92400e;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #658C58;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Bill Modal Specific Styles */
+.bill-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.bill-header h3 {
+  font-size: 1.5rem;
+  color: #1a202c;
+  margin: 0 0 0.5rem 0;
+}
+
+.bill-header p {
+  color: #718096;
+  margin: 0;
+}
+
+.bill-table {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.bill-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bill-table th,
+.bill-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.bill-table th {
+  background: #f7fafc;
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.875rem;
+}
+
+.bill-table td {
+  color: #4a5568;
+}
+
+.bill-table .total-row {
+  background: #f7fafc;
+  font-weight: 700;
+}
+
+.bill-summary {
+  background: #f7fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  color: #4a5568;
+}
+
+.summary-item.total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  border-top: 2px solid #e2e8f0;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.bill-note {
+  background: #dbeafe;
+  padding: 1rem;
+  border-radius: 6px;
+  color: #1e40af;
+  font-size: 0.875rem;
+}
+
+.bill-note p {
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .milk-subscription-page {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .subscriptions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subscription-actions {
+    flex-direction: column;
+  }
+
+  .subscription-actions button {
+    width: 100%;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .bill-table {
+    font-size: 0.875rem;
+  }
+
+  .bill-table th,
+  .bill-table td {
+    padding: 0.5rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .modal-overlay {
+    position: static;
+    background: none;
+  }
+
+  .modal-header,
+  .modal-footer,
+  .close-btn {
+    display: none;
+  }
+
+  .modal-content {
+    box-shadow: none;
+    max-width: 100%;
+  }
+}
