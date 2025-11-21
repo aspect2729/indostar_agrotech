@@ -40,9 +40,16 @@ const CreateSubscription: React.FC = () => {
     loadProduct();
     // Pre-fill address if user has one
     if (user?.addresses && user.addresses.length > 0) {
+      const userAddress = user.addresses[0];
       setFormData(prev => ({
         ...prev,
-        delivery_address: user.addresses[0]
+        delivery_address: {
+          street: userAddress.street,
+          city: userAddress.city,
+          state: userAddress.state,
+          pincode: userAddress.pincode,
+          phone: user.phone || ''
+        }
       }));
     }
   }, [productId, user]);
