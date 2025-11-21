@@ -273,23 +273,37 @@ class AuthService:
             raise ValueError("User with this email already exists")
         
         # Create user document
+        # Don't include google_id field at all for email users (avoids index issues)
         user_data = {
             "email": email,
             "password_hash": hash_password(password),
             "name": name,
             "role": role,
             "phone": phone,
-            "google_id": None,
             "addresses": [],
             "created_at": datetime.utcnow(),
             "updated_at": datetime.utcnow()
         }
         
-        result = await users_collection.insert_one(user_data)
-        user_data["_id"] = result.inserted_id
-        
-        logger.info(f"New user registered with email: {email}")
-        return User(**user_data)
+        try:
+            result = await users_collection.insert_one(user_data)
+            user_data["_id"] = result.inserted_id
+            user_data["google_id"] = None  # Add it back for the User model
+            
+            logger.info(f"New user registered with email: {email}")
+            return User(**user_data)
+        except Exception as e:
+            # If we get a duplicate key error on google_id, it means the index isn't sparse yet
+            # In this case, we'll add google_id as an empty string instead of None
+            if "E11000" in str(e) and "google_id" in str(e):
+                logger.warning("google_id index not sparse, using empty string workaround")
+                user_data["google_id"] = f"email_{email}"  # Unique identifier for email users
+                result = await users_collection.insert_one(user_data)
+                user_data["_id"] = result.inserted_id
+                logger.info(f"New user registered with email (workaround): {email}")
+                return User(**user_data)
+            else:
+                raise
     
     async def authenticate_with_email(self, email: str, password: str) -> Optional[User]:
         """Authenticate user with email and password."""
