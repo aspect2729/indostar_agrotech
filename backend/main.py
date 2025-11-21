@@ -95,10 +95,11 @@ async def root():
 
 
 # Include routers
-from app.routes import auth, products, inventory, orders, users, dev_auth, health, subscriptions
+from app.routes import auth, products, inventory, orders, users, dev_auth, health, subscriptions, otp_auth
 
 app.include_router(health.router, prefix="/api", tags=["Health & Monitoring"])
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(otp_auth.router, tags=["OTP Authentication"])
 app.include_router(dev_auth.router, prefix="/api/auth", tags=["Development Auth"])  # DEV ONLY
 app.include_router(products.router, prefix="/api/products", tags=["Products"])
 app.include_router(inventory.router, prefix="/api/inventory", tags=["Inventory"])
