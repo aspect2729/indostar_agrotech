@@ -283,8 +283,8 @@
 }
 
 .status-badge.in-stock {
-  background: #c8e6c9;
-  color: #2e7d32;
+  background: rgba(101, 140, 88, 0.2);
+  color: var(--primary-dark);
 }
 
 .status-badge.low-stock {
@@ -336,7 +336,7 @@
 }
 
 .save-btn {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   color: white;
 }
 
@@ -405,7 +405,7 @@
 }
 
 .summary-value.success {
-  color: #4caf50;
+  color: var(--success);
 }
 
 /* Loading */

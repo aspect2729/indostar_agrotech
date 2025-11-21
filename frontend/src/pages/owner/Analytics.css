@@ -100,7 +100,7 @@
 }
 
 .metric-card.revenue {
-  border-left-color: #4caf50;
+  border-left-color: var(--primary-color);
 }
 
 .metric-card.orders {
@@ -414,7 +414,7 @@
 
 .revenue {
   font-weight: 600;
-  color: #4caf50;
+  color: var(--primary-color);
 }
 
 .quantity,

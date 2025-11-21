@@ -348,7 +348,7 @@
 .wholesale-price {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #27ae60;
+  color: var(--primary-color);
 }
 
 .retail-price {

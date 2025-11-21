@@ -162,8 +162,8 @@
 }
 
 .product-item.selected {
-  border-color: #27ae60;
-  background: #f0fdf4;
+  border-color: var(--primary-color);
+  background: rgba(101, 140, 88, 0.1);
 }
 
 .product-image {
@@ -209,14 +209,14 @@
 .wholesale-price {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #27ae60;
+  color: var(--primary-color);
   margin: 0;
 }
 
 .delivery-badge {
   display: inline-block;
-  background: rgba(46, 204, 113, 0.1);
-  color: #27ae60;
+  background: rgba(101, 140, 88, 0.1);
+  color: var(--primary-color);
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -243,7 +243,7 @@
 }
 
 .select-btn.selected {
-  background: #27ae60;
+  background: var(--primary-color);
 }
 
 .select-btn.selected:hover {
@@ -331,7 +331,7 @@
 .item-total {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #27ae60;
+  color: var(--primary-color);
   min-width: 100px;
   text-align: right;
 }
@@ -492,7 +492,7 @@
 .place-order-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -618,7 +618,7 @@
 }
 
 .confirm-btn {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
   color: white;
 }
 
