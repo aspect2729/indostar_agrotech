@@ -1,6 +1,7 @@
 """
 OTP-based Authentication Routes
 """
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -151,6 +152,3 @@ async def resend_otp(request: SendOTPRequest):
         raise HTTPException(status_code=400, detail=result['message'])
     
     return result
-
-
-from datetime import datetime
