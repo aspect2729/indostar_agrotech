@@ -31,3 +31,4 @@ package-lock.json
 setup_oauth.sh
 redeploy.sh
 verify-deployment.sh
+.vercel

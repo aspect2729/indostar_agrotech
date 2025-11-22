@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Frontend-Backend Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+        .product-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .product-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        .product-category {
+            color: #667eea;
+            font-size: 14px;
+        }
+        .product-price {
+            color: #28a745;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Frontend-Backend Connection Test</h1>
+        <p>Test the connection between frontend and backend API</p>
+        
+        <div>
+            <button onclick="testProducts()">Test Get Products</button>
+            <button onclick="testHealth()">Test Health Check</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://indostar-agrotech-1.onrender.com';
+        
+        function showResult(message, isSuccess = true, data = null) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${isSuccess ? 'success' : 'error'}`;
+            resultDiv.innerHTML = message;
+            
+            if (data) {
+                if (Array.isArray(data)) {
+                    resultDiv.innerHTML += '<h3>Products:</h3>';
+                    data.forEach(product => {
+                        resultDiv.innerHTML += `
+                            <div class="product-card">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-category">Category: ${product.category}</div>
+                                <div class="product-price">₹${product.price}</div>
+                                <div>Stock: ${product.stock_quantity || 'N/A'}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    resultDiv.innerHTML += '\n\n' + JSON.stringify(data, null, 2);
+                }
+            }
+        }
+        
+        async function testProducts() {
+            showResult('⏳ Loading products...', true);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/products?isActive=true`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const products = data.products || data.data || [];
+                    showResult(
+                        `✅ Success! Found ${products.length} products\n` +
+                        `Status: ${response.status}\n` +
+                        `Total: ${data.total || products.length}`,
+                        true,
+                        products
+                    );
+                } else {
+                    showResult(
+                        `❌ Error: ${response.status}\n` +
+                        `Message: ${data.message || data.error || 'Unknown error'}`,
+                        false,
+                        data
+                    );
+                }
+            } catch (error) {
+                showResult(
+                    `❌ Network Error:\n${error.message}\n\n` +
+                    `Make sure the backend is running at: ${API_URL}`,
+                    false
+                );
+            }
+        }
+        
+        async function testHealth() {
+            showResult('⏳ Checking health...', true);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(
+                        `✅ Backend is healthy!\n` +
+                        `Status: ${data.status}\n` +
+                        `Database: ${data.database}\n` +
+                        `Timestamp: ${data.timestamp}`,
+                        true,
+                        data
+                    );
+                } else {
+                    showResult(
+                        `❌ Health check failed: ${response.status}`,
+                        false,
+                        data
+                    );
+                }
+            } catch (error) {
+                showResult(
+                    `❌ Cannot reach backend:\n${error.message}`,
+                    false
+                );
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('result').innerHTML = '';
+        }
+        
+        // Auto-test on load
+        window.onload = () => {
+            testProducts();
+        };
+    </script>
+</body>
+</html>

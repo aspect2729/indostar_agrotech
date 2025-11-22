@@ -1,7 +1,6 @@
 /**
- * Layout Component
- * Wraps pages with TopHeader, NavigationDrawer, and BottomNavigation
- * Implements requirements: 1.1, 1.2, 1.5, 4.1, 9.1, 12.1, 12.2
+ * Clean Layout Component - Fresh Design
+ * Simple layout with modern navigation
  */
 
 import React, { useState } from 'react';
@@ -24,7 +23,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
 
-  // Get page title based on current route
   const getPageTitle = (): string => {
     const path = location.pathname;
     
@@ -59,19 +57,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleTogglePause = (paused: boolean) => {
     setDeliveriesPaused(paused);
-    // TODO: Implement actual pause deliveries API call
     console.log('Deliveries paused:', paused);
   };
 
-  // Mock notification count - TODO: Replace with actual notification service
   const notificationCount = 0;
-
-  // Get user role, default to 'consumer' if not available
   const userRole = (user?.role as 'consumer' | 'distributor' | 'owner') || 'consumer';
 
   return (
     <div className="layout">
-      {/* Skip to main content link for keyboard users */}
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>

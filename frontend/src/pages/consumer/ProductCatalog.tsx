@@ -1,13 +1,10 @@
 /**
- * Product Catalog Component
- * 
- * Displays all products with filtering using new design components.
- * Implements requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 13.1, 13.4
+ * Product Catalog - Clean Design
+ * Displays all products with filtering
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts';
 import { getProducts } from '../../services';
 import { Product } from '../../types';
 import CategoryTabs, { Category } from '../../components/consumer/CategoryTabs';
@@ -24,10 +21,8 @@ const categories: Category[] = [
 ];
 
 const ProductCatalog: React.FC = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const contentRef = useRef<HTMLDivElement>(null);
   
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +54,7 @@ const ProductCatalog: React.FC = () => {
       }
 
       const response: any = await getProducts(params);
-      // Backend returns {products: [...]} not {data: [...]}
+      console.log('Products loaded:', response);
       setProducts(response.products || response.data || []);
       setTotal(response.total || 0);
       setHasMore(response.hasMore || false);
@@ -72,7 +67,6 @@ const ProductCatalog: React.FC = () => {
   }, [page, selectedCategory, searchQuery]);
 
   useEffect(() => {
-    // Get category from URL params
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
       setSelectedCategory(categoryParam);
@@ -87,7 +81,6 @@ const ProductCatalog: React.FC = () => {
     setSelectedCategory(categoryId);
     setPage(1);
     
-    // Update URL params (Requirement 3.3)
     if (categoryId !== 'all') {
       setSearchParams({ category: categoryId });
     } else {
@@ -106,17 +99,14 @@ const ProductCatalog: React.FC = () => {
   };
 
   const handleSubscribe = (productId: string) => {
-    // Navigate to subscription creation page
-    navigate(`/consumer/subscriptions/create?productId=${productId}`);
+    navigate(`/consumer/subscribe/${productId}`);
   };
 
   const handleBuyOnce = (productId: string) => {
-    // Add to cart and navigate to cart
     navigate(`/consumer/products/${productId}`);
   };
 
   const handleShare = (productId: string) => {
-    // Share functionality is handled in ProductCard
     console.log('Share product:', productId);
   };
 
@@ -128,40 +118,9 @@ const ProductCatalog: React.FC = () => {
 
   return (
     <div className="product-catalog">
-      {/* Header */}
-      <header className="catalog-header fade-in">
-        <div className="header-content">
-          <div className="logo-section">
-            <h1 className="brand-name" onClick={() => navigate('/consumer/home')}>
-              Indostar Agrotech
-            </h1>
-          </div>
-          <nav className="header-nav">
-            <button className="nav-link" onClick={() => navigate('/consumer/home')}>
-              Home
-            </button>
-            <button className="nav-link active">
-              Products
-            </button>
-            <button className="nav-link" onClick={() => navigate('/consumer/cart')}>
-              Cart
-            </button>
-            <button className="nav-link" onClick={() => navigate('/consumer/orders')}>
-              Orders
-            </button>
-            <div className="user-menu">
-              <span className="user-name">{user?.name}</span>
-              <button className="logout-btn" onClick={logout}>
-                Logout
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-
-      <div className="catalog-container" ref={contentRef}>
+      <div className="catalog-container">
         {/* Search Section */}
-        <section className="filter-section slide-in-down">
+        <section className="filter-section">
           <div className="search-bar">
             <input
               type="text"
@@ -180,15 +139,14 @@ const ProductCatalog: React.FC = () => {
           </div>
         </section>
 
-        {/* Category Tabs - Requirement 3.1, 3.2 */}
+        {/* Category Tabs */}
         <CategoryTabs
           categories={categories}
           activeCategory={selectedCategory}
           onCategoryChange={handleCategoryChange}
-          scrollTargetRef={contentRef}
         />
 
-        {/* Products Grid - Requirements 2.1, 2.2, 2.3, 13.1, 13.4 */}
+        {/* Products Grid */}
         <section className="products-section">
           <ProductGrid
             products={products}
