@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Feature Detection - IndoStar</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f4c430;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .feature {
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .feature.supported {
+      background: #e8f5e9;
+      border-color: #4caf50;
+    }
+
+    .feature.not-supported {
+      background: #ffebee;
+      border-color: #f44336;
+    }
+
+    .feature-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .feature-status {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .supported .feature-status {
+      color: #2e7d32;
+    }
+
+    .not-supported .feature-status {
+      color: #c62828;
+    }
+
+    .browser-info {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+
+    .browser-info h3 {
+      color: #1976d2;
+      margin-bottom: 10px;
+    }
+
+    .info-item {
+      margin: 5px 0;
+      color: #333;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+    }
+
+    .legend-box.supported {
+      background: #4caf50;
+    }
+
+    .legend-box.not-supported {
+      background: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Browser Feature Detection</h1>
+    <p class="subtitle">Testing browser compatibility for IndoStar E-commerce Application</p>
+
+    <div class="browser-info">
+      <h3>Your Browser Information</h3>
+      <div class="info-item"><strong>User Agent:</strong> <span id="userAgent"></span></div>
+      <div class="info-item"><strong>Platform:</strong> <span id="platform"></span></div>
+      <div class="info-item"><strong>Screen Size:</strong> <span id="screenSize"></span></div>
+      <div class="info-item"><strong>Viewport Size:</strong> <span id="viewportSize"></span></div>
+      <div class="info-item"><strong>Device Pixel Ratio:</strong> <span id="pixelRatio"></span></div>
+      <div class="info-item"><strong>Touch Support:</strong> <span id="touchSupport"></span></div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-box supported"></div>
+        <span>Supported</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-box not-supported"></div>
+        <span>Not Supported</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>JavaScript Features</h2>
+      <div class="feature-grid" id="jsFeatures"></div>
+    </div>
+
+    <div class="section">
+      <h2>CSS Features</h2>
+      <div class="feature-grid" id="cssFeatures"></div>
+    </div>
+
+    <div class="section">
+      <h2>Web APIs</h2>
+      <div class="feature-grid" id="webApis"></div>
+    </div>
+
+    <div class="section">
+      <h2>Storage APIs</h2>
+      <div class="feature-grid" id="storageApis"></div>
+    </div>
+
+    <div class="section">
+      <h2>Media Features</h2>
+      <div class="feature-grid" id="mediaFeatures"></div>
+    </div>
+  </div>
+
+  <script>
+    // Browser Information
+    document.getElementById('userAgent').textContent = navigator.userAgent;
+    document.getElementById('platform').textContent = navigator.platform;
+    document.getElementById('screenSize').textContent = `${screen.width}x${screen.height}`;
+    document.getElementById('viewportSize').textContent = `${window.innerWidth}x${window.innerHeight}`;
+    document.getElementById('pixelRatio').textContent = window.devicePixelRatio;
+    document.getElementById('touchSupport').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+
+    // Feature Detection
+    const features = {
+      jsFeatures: [
+        { name: 'ES6 Classes', test: () => typeof class {} === 'function' },
+        { name: 'Arrow Functions', test: () => { try { eval('() => {}'); return true; } catch(e) { return false; } } },
+        { name: 'Promises', test: () => typeof Promise !== 'undefined' },
+        { name: 'Async/Await', test: () => { try { eval('(async () => {})'); return true; } catch(e) { return false; } } },
+        { name: 'Fetch API', test: () => typeof fetch !== 'undefined' },
+        { name: 'Template Literals', test: () => { try { eval('`test`'); return true; } catch(e) { return false; } } },
+        { name: 'Destructuring', test: () => { try { eval('const {a} = {a:1}'); return true; } catch(e) { return false; } } },
+        { name: 'Spread Operator', test: () => { try { eval('[...[1,2]]'); return true; } catch(e) { return false; } } },
+        { name: 'Optional Chaining', test: () => { try { eval('({})?.a'); return true; } catch(e) { return false; } } },
+        { name: 'Nullish Coalescing', test: () => { try { eval('null ?? 1'); return true; } catch(e) { return false; } } },
+      ],
+      cssFeatures: [
+        { name: 'CSS Grid', test: () => CSS.supports('display', 'grid') },
+        { name: 'CSS Flexbox', test: () => CSS.supports('display', 'flex') },
+        { name: 'CSS Variables', test: () => CSS.supports('--test', '0') },
+        { name: 'CSS Transforms', test: () => CSS.supports('transform', 'translateX(0)') },
+        { name: 'CSS Transitions', test: () => CSS.supports('transition', 'all 0.3s') },
+        { name: 'CSS Animations', test: () => CSS.supports('animation', 'test 1s') },
+        { name: 'CSS Backdrop Filter', test: () => CSS.supports('backdrop-filter', 'blur(10px)') },
+        { name: 'CSS Sticky Position', test: () => CSS.supports('position', 'sticky') },
+        { name: 'CSS Gap', test: () => CSS.supports('gap', '10px') },
+        { name: 'CSS Aspect Ratio', test: () => CSS.supports('aspect-ratio', '16/9') },
+      ],
+      webApis: [
+        { name: 'Service Worker', test: () => 'serviceWorker' in navigator },
+        { name: 'Web Workers', test: () => typeof Worker !== 'undefined' },
+        { name: 'Intersection Observer', test: () => 'IntersectionObserver' in window },
+        { name: 'Resize Observer', test: () => 'ResizeObserver' in window },
+        { name: 'Mutation Observer', test: () => 'MutationObserver' in window },
+        { name: 'Geolocation', test: () => 'geolocation' in navigator },
+        { name: 'Notifications', test: () => 'Notification' in window },
+        { name: 'Web Share API', test: () => 'share' in navigator },
+        { name: 'Clipboard API', test: () => 'clipboard' in navigator },
+        { name: 'Page Visibility API', test: () => 'visibilityState' in document },
+      ],
+      storageApis: [
+        { name: 'localStorage', test: () => typeof localStorage !== 'undefined' },
+        { name: 'sessionStorage', test: () => typeof sessionStorage !== 'undefined' },
+        { name: 'IndexedDB', test: () => 'indexedDB' in window },
+        { name: 'Cache API', test: () => 'caches' in window },
+        { name: 'Cookies', test: () => navigator.cookieEnabled },
+      ],
+      mediaFeatures: [
+        { name: 'WebP Support', test: () => {
+          const canvas = document.createElement('canvas');
+          return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        }},
+        { name: 'Media Queries', test: () => typeof window.matchMedia !== 'undefined' },
+        { name: 'Prefers Reduced Motion', test: () => window.matchMedia('(prefers-reduced-motion)').media !== 'not all' },
+        { name: 'Prefers Color Scheme', test: () => window.matchMedia('(prefers-color-scheme)').media !== 'not all' },
+        { name: 'Touch Events', test: () => 'ontouchstart' in window },
+        { name: 'Pointer Events', test: () => 'PointerEvent' in window },
+      ]
+    };
+
+    // Render features
+    Object.keys(features).forEach(category => {
+      const container = document.getElementById(category);
+      features[category].forEach(feature => {
+        const supported = feature.test();
+        const div = document.createElement('div');
+        div.className = `feature ${supported ? 'supported' : 'not-supported'}`;
+        div.innerHTML = `
+          <div class="feature-name">${feature.name}</div>
+          <div class="feature-status">${supported ? '✓ Supported' : '✗ Not Supported'}</div>
+        `;
+        container.appendChild(div);
+      });
+    });
+
+    // Log results to console for automated testing
+    console.log('=== Browser Feature Detection Results ===');
+    Object.keys(features).forEach(category => {
+      console.log(`\n${category}:`);
+      features[category].forEach(feature => {
+        const supported = feature.test();
+        console.log(`  ${feature.name}: ${supported ? '✓' : '✗'}`);
+      });
+    });
+  </script>
+</body>
+</html>

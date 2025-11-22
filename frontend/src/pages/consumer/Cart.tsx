@@ -24,6 +24,10 @@ const Cart: React.FC = () => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Track items being removed or updated for animations (Requirement 6.2)
+  const [removingItems, setRemovingItems] = useState<Set<string>>(new Set());
+  const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
 
   // Address form state
   const [address, setAddress] = useState<Address>({
@@ -48,10 +52,38 @@ const Cart: React.FC = () => {
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeFromCart(productId);
+      handleRemove(productId);
     } else {
+      // Add animation class (Requirement 6.2)
+      setUpdatingItems(prev => new Set(prev).add(productId));
+      
+      // Update quantity
       updateQuantity(productId, newQuantity);
+      
+      // Remove animation class after animation completes
+      setTimeout(() => {
+        setUpdatingItems(prev => {
+          const next = new Set(prev);
+          next.delete(productId);
+          return next;
+        });
+      }, 200);
     }
+  };
+
+  const handleRemove = (productId: string) => {
+    // Add removing animation class (Requirement 6.2)
+    setRemovingItems(prev => new Set(prev).add(productId));
+    
+    // Remove from cart after animation completes
+    setTimeout(() => {
+      removeFromCart(productId);
+      setRemovingItems(prev => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
+    }, 300);
   };
 
   const handleAddressChange = (field: keyof Address, value: string | boolean) => {
@@ -188,10 +220,14 @@ const Cart: React.FC = () => {
         <div className="cart-content">
           {/* Cart Items */}
           <div className="cart-items-section">
-            {items.map((item, index) => (
+            {items.map((item, index) => {
+              const isRemoving = removingItems.has(item.product._id);
+              const isUpdating = updatingItems.has(item.product._id);
+              
+              return (
               <div
                 key={item.product._id}
-                className="cart-item scroll-reveal"
+                className={`cart-item scroll-reveal ${isRemoving ? 'removing' : ''} ${isUpdating ? 'quantity-changing' : ''}`}
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <div
@@ -226,15 +262,17 @@ const Cart: React.FC = () => {
                 <div className="item-actions">
                   <div className="quantity-controls">
                     <button
-                      className="quantity-btn"
+                      className={`quantity-btn ${isUpdating ? 'loading' : ''}`}
                       onClick={() => handleQuantityChange(item.product._id, item.quantity - 1)}
+                      disabled={isRemoving || isUpdating}
                     >
                       −
                     </button>
                     <span className="quantity-value">{item.quantity}</span>
                     <button
-                      className="quantity-btn"
+                      className={`quantity-btn ${isUpdating ? 'loading' : ''}`}
                       onClick={() => handleQuantityChange(item.product._id, item.quantity + 1)}
+                      disabled={isRemoving || isUpdating}
                     >
                       +
                     </button>
@@ -245,14 +283,16 @@ const Cart: React.FC = () => {
                   </div>
 
                   <button
-                    className="remove-btn"
-                    onClick={() => removeFromCart(item.product._id)}
+                    className={`remove-btn ${isRemoving ? 'loading' : ''}`}
+                    onClick={() => handleRemove(item.product._id)}
+                    disabled={isRemoving || isUpdating}
                   >
-                    Remove
+                    {isRemoving ? 'Removing...' : 'Remove'}
                   </button>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Order Summary */}
@@ -292,8 +332,9 @@ const Cart: React.FC = () => {
                 <button
                   className="checkout-btn hover-lift"
                   onClick={() => setShowCheckout(true)}
+                  disabled={loading}
                 >
-                  Proceed to Checkout
+                  {loading ? 'Processing...' : 'Proceed to Checkout'}
                 </button>
               ) : (
                 <div className="checkout-form slide-in-up">

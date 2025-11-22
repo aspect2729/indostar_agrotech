@@ -21,3 +21,9 @@ export * from './errorHandling';
 
 // Scroll animations
 export { initAllScrollAnimations } from './scrollAnimations';
+
+// Image optimization utilities
+export * from './imageOptimization';
+
+// Animation performance utilities
+export * from './animationPerformance';

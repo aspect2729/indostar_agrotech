@@ -9,9 +9,10 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../contexts';
 import { getProducts, createOrder } from '../../services';
 import { Product, Address, CreateOrderRequest } from '../../types';
+import NavigationDrawer from '../../components/layout/NavigationDrawer';
+import TopHeader from '../../components/layout/TopHeader';
 import './BulkOrderForm.css';
 
 interface OrderItem {
@@ -66,7 +67,6 @@ const INDIAN_STATES = [
 ];
 
 const BulkOrderForm: React.FC = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
@@ -75,6 +75,8 @@ const BulkOrderForm: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [deliveriesPaused, setDeliveriesPaused] = useState(false);
   
   // Delivery address form
   const [deliveryAddress, setDeliveryAddress] = useState<Address>({
@@ -253,31 +255,23 @@ const BulkOrderForm: React.FC = () => {
 
   return (
     <div className="bulk-order-form">
-      {/* Header */}
-      <header className="form-header fade-in">
-        <div className="header-content">
-          <div className="logo-section">
-            <h1 className="brand-name" onClick={() => navigate('/distributor/dashboard')}>
-              Indostar Agrotech
-            </h1>
-            <p className="portal-label">Bulk Order</p>
-          </div>
-          <nav className="header-nav">
-            <button className="nav-link" onClick={() => navigate('/distributor/dashboard')}>
-              Dashboard
-            </button>
-            <button className="nav-link" onClick={() => navigate('/distributor/orders')}>
-              Orders
-            </button>
-            <div className="user-menu">
-              <span className="user-name">{user?.name}</span>
-              <button className="logout-btn" onClick={logout}>
-                Logout
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      {/* Navigation Drawer */}
+      <NavigationDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        deliveriesPaused={deliveriesPaused}
+        onTogglePause={setDeliveriesPaused}
+        appVersion="1.0.0"
+      />
+
+      {/* Top Header */}
+      <TopHeader
+        title="Bulk Order"
+        onMenuClick={() => setDrawerOpen(true)}
+        notificationCount={0}
+        cartItemCount={0}
+        isMenuOpen={drawerOpen}
+      />
 
       <div className="form-container">
         <div className="form-layout">

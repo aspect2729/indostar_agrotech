@@ -18,12 +18,24 @@ interface OrderDetailModalProps {
 }
 
 const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, onClose }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    // Trigger expansion animation after mount
+    setTimeout(() => setIsExpanded(true), 10);
+  }, []);
+
+  const handleClose = () => {
+    setIsExpanded(false);
+    setTimeout(onClose, 200);
+  };
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className={`modal-overlay ${isExpanded ? 'expanded' : ''}`} onClick={handleClose}>
+      <div className={`modal-content ${isExpanded ? 'expanded' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Order Details</h2>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={handleClose}>×</button>
         </div>
 
         <div className="modal-body">
@@ -109,6 +121,7 @@ const OrderHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filterStatus, setFilterStatus] = useState<OrderStatus | 'all'>('all');
+  const [reorderingOrderId, setReorderingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -161,6 +174,23 @@ const OrderHistory: React.FC = () => {
         return '#e74c3c';
       default:
         return '#95a5a6';
+    }
+  };
+
+  const handleReorder = async (order: Order) => {
+    // Add items from the order to cart and navigate to cart
+    setReorderingOrderId(order._id);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // In a real implementation, this would add items to cart via CartContext
+      // For now, we'll just navigate to the product catalog
+      navigate('/consumer/products');
+    } catch (error) {
+      console.error('Failed to reorder:', error);
+    } finally {
+      setReorderingOrderId(null);
     }
   };
 
@@ -306,12 +336,30 @@ const OrderHistory: React.FC = () => {
                 </div>
 
                 <div className="order-footer">
-                  <button
-                    className="view-details-btn hover-lift"
-                    onClick={() => setSelectedOrder(order)}
-                  >
-                    View Details
-                  </button>
+                  <div className="order-actions">
+                    <button
+                      className="view-details-btn hover-lift"
+                      onClick={() => setSelectedOrder(order)}
+                    >
+                      View Details
+                    </button>
+                    {order.status === 'delivered' && (
+                      <button
+                        className="reorder-btn hover-lift"
+                        onClick={() => handleReorder(order)}
+                        disabled={reorderingOrderId === order._id}
+                      >
+                        {reorderingOrderId === order._id ? (
+                          <>
+                            <span className="spinner-small"></span>
+                            Reordering...
+                          </>
+                        ) : (
+                          'Reorder'
+                        )}
+                      </button>
+                    )}
+                  </div>
 
                   {/* Order Tracking Progress */}
                   <div className="tracking-progress">

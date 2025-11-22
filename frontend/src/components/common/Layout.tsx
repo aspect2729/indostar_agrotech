@@ -1,23 +1,103 @@
 /**
  * Layout Component
- * Wraps pages with the unified header
+ * Wraps pages with TopHeader, NavigationDrawer, and BottomNavigation
+ * Implements requirements: 1.1, 1.2, 1.5, 4.1, 9.1, 12.1, 12.2
  */
 
-import React from 'react';
-import Header from './Header';
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import TopHeader from '../layout/TopHeader';
+import NavigationDrawer from '../layout/NavigationDrawer';
+import BottomNavigation from '../layout/BottomNavigation';
+import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
+import './Layout.css';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [deliveriesPaused, setDeliveriesPaused] = useState(false);
+  const { itemCount } = useCart();
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // Get page title based on current route
+  const getPageTitle = (): string => {
+    const path = location.pathname;
+    
+    if (path.includes('/consumer/home')) return 'Home';
+    if (path.includes('/consumer/products') && !path.includes('/consumer/products/')) return 'Products';
+    if (path.includes('/consumer/products/')) return 'Product Details';
+    if (path.includes('/consumer/cart')) return 'Cart';
+    if (path.includes('/consumer/orders')) return 'Order History';
+    if (path.includes('/consumer/subscriptions')) return 'Subscriptions';
+    if (path.includes('/consumer/subscribe')) return 'Create Subscription';
+    
+    if (path.includes('/distributor/dashboard')) return 'Dashboard';
+    if (path.includes('/distributor/bulk-order')) return 'Bulk Order';
+    if (path.includes('/distributor/orders')) return 'Order History';
+    
+    if (path.includes('/owner/dashboard')) return 'Dashboard';
+    if (path.includes('/owner/products')) return 'Products';
+    if (path.includes('/owner/inventory')) return 'Inventory';
+    if (path.includes('/owner/orders')) return 'Orders';
+    if (path.includes('/owner/analytics')) return 'Analytics';
+    
+    return 'IndoStar';
+  };
+
+  const handleMenuClick = () => {
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+
+  const handleTogglePause = (paused: boolean) => {
+    setDeliveriesPaused(paused);
+    // TODO: Implement actual pause deliveries API call
+    console.log('Deliveries paused:', paused);
+  };
+
+  // Mock notification count - TODO: Replace with actual notification service
+  const notificationCount = 0;
+
+  // Get user role, default to 'consumer' if not available
+  const userRole = (user?.role as 'consumer' | 'distributor' | 'owner') || 'consumer';
+
   return (
-    <>
-      <Header />
-      <main className="main-content">
+    <div className="layout">
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+      
+      <TopHeader
+        title={getPageTitle()}
+        onMenuClick={handleMenuClick}
+        notificationCount={notificationCount}
+        cartItemCount={itemCount}
+        isMenuOpen={isDrawerOpen}
+      />
+      
+      <NavigationDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleDrawerClose}
+        deliveriesPaused={deliveriesPaused}
+        onTogglePause={handleTogglePause}
+        appVersion="1.0.0"
+      />
+      
+      <main className="main-content" role="main" id="main-content">
         {children}
       </main>
-    </>
+      
+      <BottomNavigation userRole={userRole} />
+    </div>
   );
 };
 

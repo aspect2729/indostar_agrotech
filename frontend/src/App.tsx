@@ -1,25 +1,37 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, CartProvider, useAuth } from './contexts';
-import { 
-  DevLogin,
-  HomePage, 
-  ProductCatalog, 
-  ProductDetail, 
-  Cart, 
-  OrderHistory,
-  DistributorDashboard,
-  BulkOrderForm,
-  DistributorOrderHistory,
-  OwnerDashboard 
-} from './pages';
-import OTPLoginPage from './pages/OTPLoginPage';
-import MilkSubscription from './pages/consumer/MilkSubscription';
-import CreateSubscription from './pages/consumer/CreateSubscription';
-import { ProtectedRoute, OfflineIndicator } from './components/common';
+import { ProtectedRoute, OfflineIndicator, ErrorBoundary, Spinner } from './components/common';
 import Layout from './components/common/Layout';
 import { initAllScrollAnimations } from './utils/scrollAnimations';
 import './styles/App.css';
+
+// Lazy load route components for code splitting
+const DevLogin = lazy(() => import('./pages/DevLogin'));
+const OTPLoginPage = lazy(() => import('./pages/OTPLoginPage'));
+const Notifications = lazy(() => import('./pages/common/Notifications'));
+
+// Consumer pages - lazy loaded
+const HomePage = lazy(() => import('./pages/consumer/HomePage'));
+const ProductCatalog = lazy(() => import('./pages/consumer/ProductCatalog'));
+const ProductDetail = lazy(() => import('./pages/consumer/ProductDetail'));
+const Cart = lazy(() => import('./pages/consumer/Cart'));
+const OrderHistory = lazy(() => import('./pages/consumer/OrderHistory'));
+const MilkSubscription = lazy(() => import('./pages/consumer/MilkSubscription'));
+const CreateSubscription = lazy(() => import('./pages/consumer/CreateSubscription'));
+
+// Distributor pages - lazy loaded
+const DistributorDashboard = lazy(() => import('./pages/distributor/DistributorDashboard'));
+const BulkOrderForm = lazy(() => import('./pages/distributor/BulkOrderForm'));
+const DistributorOrderHistory = lazy(() => import('./pages/distributor/DistributorOrderHistory'));
+
+// Owner pages - lazy loaded (heavy components with potential charts)
+const OwnerDashboard = lazy(() => import('./pages/owner/OwnerDashboard'));
+// Additional owner pages will be lazy loaded when routes are added
+// const InventoryManagement = lazy(() => import('./pages/owner/InventoryManagement'));
+// const OrderManagement = lazy(() => import('./pages/owner/OrderManagement'));
+// const ProductManagement = lazy(() => import('./pages/owner/ProductManagement'));
+// const Analytics = lazy(() => import('./pages/owner/Analytics'));
 
 /**
  * RoleBasedRedirect Component
@@ -57,17 +69,40 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <AuthProvider>
-        <CartProvider>
-          <OfflineIndicator />
-          <Routes>
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
+          <CartProvider>
+            <OfflineIndicator />
+            <Suspense fallback={
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh' 
+              }}>
+                <Spinner size="large" />
+              </div>
+            }>
+              <Routes>
             {/* Root route - redirects based on authentication and role */}
             <Route path="/" element={<RoleBasedRedirect />} />
           
           {/* Public routes - no header */}
           <Route path="/login" element={<OTPLoginPage />} />
           <Route path="/dev-login" element={<DevLogin />} />
+          
+          {/* Common routes */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute allowedRoles={['consumer', 'distributor', 'owner']}>
+                <Layout>
+                  <Notifications />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
           
           {/* Consumer Portal Routes */}
           <Route
@@ -218,10 +253,12 @@ function App() {
           
           {/* Catch-all route - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </CartProvider>
-      </AuthProvider>
-    </Router>
+              </Routes>
+            </Suspense>
+          </CartProvider>
+        </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

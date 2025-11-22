@@ -13,15 +13,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { getProducts, getOrders } from '../../services';
 import { Product, Order } from '../../types';
+import NavigationDrawer from '../../components/layout/NavigationDrawer';
+import TopHeader from '../../components/layout/TopHeader';
 import './DistributorDashboard.css';
 
 const DistributorDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
   const [products, setProducts] = useState<Product[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [deliveriesPaused, setDeliveriesPaused] = useState(false);
   const [stats, setStats] = useState({
     totalOrders: 0,
     pendingOrders: 0,
@@ -110,32 +114,23 @@ const DistributorDashboard: React.FC = () => {
 
   return (
     <div className="distributor-dashboard">
-      {/* Header */}
-      <header className="dashboard-header fade-in">
-        <div className="header-content">
-          <div className="logo-section">
-            <h1 className="brand-name">Indostar Agrotech</h1>
-            <p className="portal-label">Distributor Portal</p>
-          </div>
-          <nav className="header-nav">
-            <button className="nav-link active">
-              Dashboard
-            </button>
-            <button className="nav-link" onClick={handleViewAllProducts}>
-              Products
-            </button>
-            <button className="nav-link" onClick={handleViewOrderHistory}>
-              Orders
-            </button>
-            <div className="user-menu">
-              <span className="user-name">{user?.name}</span>
-              <button className="logout-btn" onClick={logout}>
-                Logout
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      {/* Navigation Drawer */}
+      <NavigationDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        deliveriesPaused={deliveriesPaused}
+        onTogglePause={setDeliveriesPaused}
+        appVersion="1.0.0"
+      />
+
+      {/* Top Header */}
+      <TopHeader
+        title="Distributor Dashboard"
+        onMenuClick={() => setDrawerOpen(true)}
+        notificationCount={0}
+        cartItemCount={0}
+        isMenuOpen={drawerOpen}
+      />
 
       <div className="dashboard-container">
         {/* Welcome Section */}

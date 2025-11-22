@@ -2,6 +2,7 @@
  * Analytics Component
  * 
  * Displays sales analytics and insights for the business owner.
+ * Updated with new design system: Layout and improved chart styling
  * Features:
  * - Display sales charts and trends
  * - Show popular products
@@ -10,6 +11,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import Layout from '../../components/common/Layout';
 import { getOrders } from '../../services/orderService';
 import { getProducts } from '../../services/productService';
 import {
@@ -223,40 +225,43 @@ const Analytics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="analytics">
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading analytics...</p>
+      <Layout>
+        <div className="analytics">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading analytics...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="analytics">
-      <div className="analytics-header">
-        <h2>Analytics Dashboard</h2>
-        <div className="time-range-selector">
-          <button
-            className={timeRange === 'week' ? 'active' : ''}
-            onClick={() => setTimeRange('week')}
-          >
-            Week
-          </button>
-          <button
-            className={timeRange === 'month' ? 'active' : ''}
-            onClick={() => setTimeRange('month')}
-          >
-            Month
-          </button>
-          <button
-            className={timeRange === 'year' ? 'active' : ''}
-            onClick={() => setTimeRange('year')}
-          >
-            Year
-          </button>
+    <Layout>
+      <div className="analytics">
+        <div className="analytics-header">
+          <h2 className="page-title">Analytics Dashboard</h2>
+          <div className="time-range-selector">
+            <button
+              className={timeRange === 'week' ? 'active' : ''}
+              onClick={() => setTimeRange('week')}
+            >
+              Week
+            </button>
+            <button
+              className={timeRange === 'month' ? 'active' : ''}
+              onClick={() => setTimeRange('month')}
+            >
+              Month
+            </button>
+            <button
+              className={timeRange === 'year' ? 'active' : ''}
+              onClick={() => setTimeRange('year')}
+            >
+              Year
+            </button>
+          </div>
         </div>
-      </div>
 
       {error && (
         <div className="error-message">
@@ -416,7 +421,8 @@ const Analytics: React.FC = () => {
           </table>
         </div>
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 };
 

@@ -4,7 +4,7 @@
  * Unit tests for authentication context and hooks.
  */
 
-import React from 'react';
+
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
 import * as authService from '../services/authService';

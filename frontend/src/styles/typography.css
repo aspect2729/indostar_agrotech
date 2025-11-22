@@ -1,0 +1,243 @@
+/**
+ * Typography System
+ * 
+ * Utility classes for consistent typography across the application.
+ * Implements requirements: 10.1, 10.2, 10.3, 10.4, 10.5
+ */
+
+/* ============================================
+   BASE TYPOGRAPHY
+   ============================================ */
+
+body {
+  font-family: var(--font-family-system);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITY CLASSES
+   ============================================ */
+
+/* Product Name Typography (16-18px medium) - Requirement 10.1 */
+.typography-product-name {
+  font-size: var(--font-size-product-name);
+  font-weight: var(--font-weight-product-name);
+  line-height: var(--line-height-product-name);
+  color: var(--color-text-primary);
+}
+
+/* Price Typography (20-24px bold) - Requirement 10.2 */
+.typography-price {
+  font-size: var(--font-size-price);
+  font-weight: var(--font-weight-price);
+  line-height: var(--line-height-price);
+  color: var(--color-text-primary);
+}
+
+/* Page Title Typography (20-22px semi-bold) - Requirement 10.3 */
+.typography-page-title {
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-page-title);
+  line-height: var(--line-height-page-title);
+  color: var(--color-text-primary);
+}
+
+/* Body Text Typography (14-16px regular) - Requirement 10.4 */
+.typography-body {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-body);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   ADDITIONAL TYPOGRAPHY SCALES
+   ============================================ */
+
+/* Caption Text */
+.typography-caption {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+/* Button Text */
+.typography-button {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+/* Brand/Label Text */
+.typography-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+}
+
+/* Secondary Text */
+.typography-secondary {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   FONT WEIGHT UTILITIES
+   ============================================ */
+
+.font-light {
+  font-weight: var(--font-weight-light);
+}
+
+.font-regular {
+  font-weight: var(--font-weight-regular);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ============================================
+   TEXT COLOR UTILITIES
+   ============================================ */
+
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+
+.text-white {
+  color: var(--color-text-white);
+}
+
+/* ============================================
+   TEXT ALIGNMENT UTILITIES
+   ============================================ */
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* ============================================
+   TEXT TRANSFORM UTILITIES
+   ============================================ */
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-lowercase {
+  text-transform: lowercase;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
+
+/* ============================================
+   TEXT OVERFLOW UTILITIES
+   ============================================ */
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY
+   ============================================ */
+
+/* Tablet and above - Requirement 10.5 (System fonts with responsive scaling) */
+@media (min-width: 768px) {
+  .typography-product-name {
+    font-size: 18px;
+  }
+
+  .typography-price {
+    font-size: 24px;
+  }
+
+  .typography-page-title {
+    font-size: 22px;
+  }
+
+  .typography-body {
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Ensure text remains readable at all sizes */
+@media (max-width: 767px) {
+  /* Maintain minimum readable sizes on mobile */
+  .typography-product-name {
+    font-size: max(16px, var(--font-size-product-name));
+  }
+
+  .typography-body {
+    font-size: max(14px, var(--font-size-body));
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .typography-product-name,
+  .typography-price,
+  .typography-page-title,
+  .typography-body {
+    font-weight: 600;
+  }
+}

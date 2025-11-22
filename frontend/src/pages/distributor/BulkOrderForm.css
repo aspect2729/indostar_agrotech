@@ -1,177 +1,90 @@
 /**
  * Bulk Order Form Styles
+ * Updated to use new design system
  */
 
 .bulk-order-form {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  background-attachment: fixed;
+  background: var(--color-background);
+  padding-top: var(--header-height-mobile);
 }
 
-/* Header */
-.form-header {
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-name {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #667eea;
-  margin: 0;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.brand-name:hover {
-  color: #764ba2;
-}
-
-.portal-label {
-  font-size: 0.9rem;
-  color: #666;
-  margin: 0;
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  color: #555;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.nav-link:hover {
-  background: #f0f0f0;
-  color: #667eea;
-}
-
-.user-menu {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding-left: 1rem;
-  border-left: 2px solid #eee;
-}
-
-.user-name {
-  font-weight: 500;
-  color: #333;
-}
-
-.logout-btn {
-  padding: 0.5rem 1rem;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-  background: #c0392b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+@media (min-width: 768px) {
+  .bulk-order-form {
+    padding-top: var(--header-height-desktop);
+  }
 }
 
 /* Form Container */
 .form-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--spacing-lg);
 }
 
 .form-layout {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
-  gap: 2rem;
+  gap: var(--spacing-lg);
 }
 
 /* Product Selection */
 .product-selection {
-  background: white;
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
 }
 
 .product-selection h2 {
-  font-size: 1.8rem;
-  color: #333;
-  margin: 0 0 1.5rem 0;
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-page-title);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md) 0;
 }
 
 .error-message {
   background: #fee;
-  color: #c00;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border-left: 4px solid #c00;
+  color: var(--color-error);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  border-left: 4px solid var(--color-error);
 }
 
 .products-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .product-item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-base);
 }
 
 .product-item:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
 }
 
 .product-item.selected {
-  border-color: var(--primary-color);
-  background: rgba(101, 140, 88, 0.1);
+  border-color: var(--color-primary);
+  background: rgba(244, 196, 48, 0.1);
 }
 
 .product-image {
   width: 80px;
   height: 80px;
-  border-radius: 8px;
+  border-radius: var(--radius-image);
   overflow: hidden;
-  background: #f8f9fa;
+  background: var(--color-background);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,61 +106,63 @@
 }
 
 .product-details h3 {
-  font-size: 1.1rem;
-  color: #333;
-  margin: 0 0 0.25rem 0;
+  font-size: var(--font-size-product-name);
+  font-weight: var(--font-weight-product-name);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
 }
 
 .product-category {
-  font-size: 0.85rem;
-  color: #667eea;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-sm) 0;
   text-transform: uppercase;
 }
 
 .wholesale-price {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--primary-color);
+  font-size: var(--font-size-price);
+  font-weight: var(--font-weight-price);
+  color: var(--color-primary);
   margin: 0;
 }
 
 .delivery-badge {
   display: inline-block;
-  background: rgba(101, 140, 88, 0.1);
-  color: var(--primary-color);
-  padding: 0.3rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
+  background: var(--badge-discount-bg);
+  color: var(--badge-discount-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-top: var(--spacing-sm);
 }
 
 .select-btn {
-  padding: 0.6rem 1.5rem;
-  background: #667eea;
-  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: var(--color-text-primary);
   border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-button);
   white-space: nowrap;
 }
 
 .select-btn:hover {
-  background: #764ba2;
+  background: var(--color-primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .select-btn.selected {
-  background: var(--primary-color);
+  background: var(--color-success);
+  color: var(--color-text-white);
 }
 
 .select-btn.selected:hover {
-  background: #229954;
+  background: var(--color-success-dark);
 }
 
 /* Selected Items */

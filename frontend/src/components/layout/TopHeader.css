@@ -1,0 +1,224 @@
+/**
+ * TopHeader Component Styles
+ * 
+ * Implements requirements: 1.1, 4.1, 4.2, 4.3, 5.1, 5.2, 5.4, 6.2, 8.1, 10.3
+ */
+
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height-mobile);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-header);
+  z-index: var(--z-header);
+}
+
+@media (min-width: 768px) {
+  .top-header {
+    height: var(--header-height-desktop);
+  }
+}
+
+.top-header__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 var(--spacing-md);
+  max-width: 100%;
+}
+
+/* ============================================
+   HAMBURGER MENU BUTTON
+   ============================================ */
+
+.top-header__hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: var(--spacing-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.top-header__hamburger:hover {
+  background: var(--color-background);
+}
+
+.top-header__hamburger:active {
+  background: var(--color-border);
+}
+
+.top-header__hamburger:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.top-header__hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-text-primary);
+  border-radius: 2px;
+  transition: all var(--transition-fast);
+}
+
+.top-header__hamburger-line:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+/* ============================================
+   PAGE TITLE
+   ============================================ */
+
+.top-header__title {
+  flex: 1;
+  margin: 0 var(--spacing-md);
+  font-size: var(--font-size-page-title);
+  font-weight: var(--font-weight-page-title);
+  line-height: var(--line-height-page-title);
+  color: var(--color-text-primary);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .top-header__title {
+    font-size: 22px;
+  }
+}
+
+/* ============================================
+   ACTION ICONS
+   ============================================ */
+
+.top-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.top-header__icon-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  padding: var(--spacing-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.top-header__icon-button:hover {
+  background: var(--color-background);
+}
+
+.top-header__icon-button:active {
+  background: var(--color-border);
+  transform: scale(0.95);
+}
+
+.top-header__icon-button:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.top-header__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   BADGE INDICATORS
+   ============================================ */
+
+.top-header__badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--badge-notification-bg);
+  color: var(--badge-notification-color);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-surface);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 767px) {
+  .top-header__container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .top-header__title {
+    margin: 0 var(--spacing-sm);
+    font-size: 18px;
+  }
+
+  .top-header__actions {
+    gap: 0;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Ensure touch targets are large enough on mobile */
+@media (pointer: coarse) {
+  .top-header__hamburger,
+  .top-header__icon-button {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .top-header {
+    border-bottom-width: 2px;
+  }
+
+  .top-header__hamburger-line {
+    height: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .top-header__hamburger,
+  .top-header__icon-button,
+  .top-header__hamburger-line {
+    transition: none;
+  }
+
+  .top-header__icon-button:active {
+    transform: none;
+  }
+}

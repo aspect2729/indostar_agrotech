@@ -2,6 +2,7 @@
  * Order Management Component
  * 
  * Allows owner to view and manage all orders from consumers and distributors.
+ * Updated with new design system: Layout and card-based design
  * Features:
  * - Display all orders from consumers and distributors
  * - Implement order filtering and sorting
@@ -10,6 +11,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Layout from '../../components/common/Layout';
 import { getOrders, updateOrderStatus, getOrderById } from '../../services/orderService';
 import {
   Order,
@@ -163,23 +165,26 @@ const OrderManagement: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="order-management">
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading orders...</p>
+      <Layout>
+        <div className="order-management">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading orders...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="order-management">
-      <div className="order-header">
-        <h2>Order Management</h2>
-        <button onClick={loadOrders} className="refresh-btn" disabled={loading}>
-          🔄 Refresh
-        </button>
-      </div>
+    <Layout>
+      <div className="order-management">
+        <div className="order-header">
+          <h2 className="page-title">Order Management</h2>
+          <button onClick={loadOrders} className="refresh-btn" disabled={loading}>
+            🔄 Refresh
+          </button>
+        </div>
 
       {/* Statistics */}
       <div className="order-stats">
@@ -455,7 +460,8 @@ const OrderManagement: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   );
 };
 

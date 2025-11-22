@@ -9,3 +9,7 @@ export type { UseFormValidationOptions, UseFormValidationReturn } from './useFor
 
 export { useNetworkStatus } from './useNetworkStatus';
 export type { UseNetworkStatusReturn } from './useNetworkStatus';
+
+export { useLazyLoad } from './useLazyLoad';
+
+export { usePageTransition, getPageTransitionClass } from './usePageTransition';

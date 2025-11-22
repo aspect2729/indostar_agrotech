@@ -1,0 +1,188 @@
+/**
+ * BottomNavigation Styles
+ * 
+ * Fixed bottom navigation bar for mobile view.
+ * Implements requirements: 1.5, 9.1, 9.2, 9.3, 9.4, 9.5
+ */
+
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-bottom-nav);
+  z-index: var(--z-bottom-nav);
+  display: none; /* Hidden by default, shown on mobile */
+}
+
+/* Show on mobile only (< 768px) */
+@media (max-width: 767px) {
+  .bottom-navigation {
+    display: block;
+  }
+}
+
+.bottom-navigation__container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-sm);
+}
+
+/* Navigation Item */
+.bottom-navigation__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  position: relative;
+  flex: 1;
+  max-width: 80px;
+}
+
+/* Icon */
+.bottom-navigation__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+.bottom-navigation__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Label */
+.bottom-navigation__label {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Active State */
+.bottom-navigation__item--active {
+  color: var(--color-primary);
+}
+
+.bottom-navigation__item--active .bottom-navigation__icon {
+  transform: scale(1.1);
+}
+
+/* Hover State (for desktop/tablet with pointer) */
+@media (hover: hover) {
+  .bottom-navigation__item:hover {
+    color: var(--color-primary-dark);
+  }
+  
+  .bottom-navigation__item:hover .bottom-navigation__icon {
+    transform: scale(1.05);
+  }
+}
+
+/* Focus State (Accessibility) */
+.bottom-navigation__item:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.bottom-navigation__item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Elevated Center Item (Products) */
+.bottom-navigation__item--elevated {
+  position: relative;
+  margin-top: calc(-1 * var(--spacing-md));
+}
+
+.bottom-navigation__item--elevated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  z-index: -1;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-fast);
+}
+
+.bottom-navigation__item--elevated .bottom-navigation__icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-text-primary);
+}
+
+.bottom-navigation__item--elevated .bottom-navigation__label {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Elevated item active state */
+.bottom-navigation__item--elevated.bottom-navigation__item--active::before {
+  background-color: var(--color-primary-dark);
+}
+
+/* Elevated item hover state */
+@media (hover: hover) {
+  .bottom-navigation__item--elevated:hover::before {
+    background-color: var(--color-primary-dark);
+  }
+}
+
+/* Tap Feedback Animation */
+.bottom-navigation__item:active {
+  transform: scale(0.95);
+}
+
+.bottom-navigation__item--elevated:active {
+  transform: scale(0.95) translateY(0);
+}
+
+/* Smooth transition for active state changes */
+.bottom-navigation__item,
+.bottom-navigation__icon,
+.bottom-navigation__label {
+  transition: all var(--transition-fast);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-navigation__item,
+  .bottom-navigation__icon,
+  .bottom-navigation__label,
+  .bottom-navigation__item--elevated::before {
+    transition: none;
+  }
+  
+  .bottom-navigation__item:active,
+  .bottom-navigation__item--elevated:active {
+    transform: none;
+  }
+  
+  .bottom-navigation__item--active .bottom-navigation__icon {
+    transform: none;
+  }
+}

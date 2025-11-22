@@ -9,9 +9,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../contexts';
 import { getOrders, getOrderById, createOrder } from '../../services';
 import { Order, OrderStatus, CreateOrderRequest } from '../../types';
+import NavigationDrawer from '../../components/layout/NavigationDrawer';
+import TopHeader from '../../components/layout/TopHeader';
 import './DistributorOrderHistory.css';
 
 interface OrderDetailViewProps {
@@ -128,7 +129,6 @@ const OrderDetailView: React.FC<OrderDetailViewProps> = ({ order, onClose, onReo
 };
 
 const DistributorOrderHistory: React.FC = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { orderId } = useParams();
   
@@ -137,6 +137,8 @@ const DistributorOrderHistory: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filterStatus, setFilterStatus] = useState<OrderStatus | 'all'>('all');
   const [reordering, setReordering] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [deliveriesPaused, setDeliveriesPaused] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -273,34 +275,23 @@ const DistributorOrderHistory: React.FC = () => {
 
   return (
     <div className="distributor-order-history">
-      {/* Header */}
-      <header className="history-header fade-in">
-        <div className="header-content">
-          <div className="logo-section">
-            <h1 className="brand-name" onClick={() => navigate('/distributor/dashboard')}>
-              Indostar Agrotech
-            </h1>
-            <p className="portal-label">Order History</p>
-          </div>
-          <nav className="header-nav">
-            <button className="nav-link" onClick={() => navigate('/distributor/dashboard')}>
-              Dashboard
-            </button>
-            <button className="nav-link" onClick={() => navigate('/distributor/products')}>
-              Products
-            </button>
-            <button className="nav-link active">
-              Orders
-            </button>
-            <div className="user-menu">
-              <span className="user-name">{user?.name}</span>
-              <button className="logout-btn" onClick={logout}>
-                Logout
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      {/* Navigation Drawer */}
+      <NavigationDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        deliveriesPaused={deliveriesPaused}
+        onTogglePause={setDeliveriesPaused}
+        appVersion="1.0.0"
+      />
+
+      {/* Top Header */}
+      <TopHeader
+        title="Order History"
+        onMenuClick={() => setDrawerOpen(true)}
+        notificationCount={0}
+        cartItemCount={0}
+        isMenuOpen={drawerOpen}
+      />
 
       <div className="history-container">
         <div className="page-header slide-in-down">

@@ -2,6 +2,7 @@
  * Inventory Management Component
  * 
  * Allows owner to view and manage inventory levels for all products.
+ * Updated with new design system: Layout and card-based design
  * Features:
  * - Display product list with current stock levels
  * - Show low-stock alerts with visual indicators
@@ -10,6 +11,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import Layout from '../../components/common/Layout';
 import {
   getAllInventory,
   updateInventory,
@@ -129,199 +131,203 @@ const InventoryManagement: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="inventory-management">
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Loading inventory...</p>
+      <Layout>
+        <div className="inventory-management">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading inventory...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="inventory-management">
-      <div className="inventory-header">
-        <h2>Inventory Management</h2>
-        <button onClick={loadInventoryData} className="refresh-btn" disabled={loading}>
-          🔄 Refresh
-        </button>
-      </div>
+    <Layout>
+      <div className="inventory-management">
+        <div className="inventory-header">
+          <h2 className="page-title">Inventory Management</h2>
+          <button onClick={loadInventoryData} className="refresh-btn" disabled={loading}>
+            🔄 Refresh
+          </button>
+        </div>
 
-      {/* Low Stock Alerts */}
-      {(lowStockAlerts?.length || 0) > 0 && (
-        <div className="low-stock-alerts">
-          <h3>⚠️ Low Stock Alerts ({lowStockAlerts?.length || 0})</h3>
-          <div className="alerts-list">
-            {(lowStockAlerts || []).map(alert => (
-              <div key={alert.product._id} className="alert-item">
-                <span className="alert-product">{alert.product.name}</span>
-                <span className="alert-quantity">
-                  {alert.inventory.quantity} {alert.inventory.unit} remaining
-                </span>
-                <span className="alert-threshold">
-                  (Threshold: {alert.inventory.lowStockThreshold})
-                </span>
-              </div>
-            ))}
+        {/* Low Stock Alerts */}
+        {(lowStockAlerts?.length || 0) > 0 && (
+          <div className="low-stock-alerts">
+            <h3>⚠️ Low Stock Alerts ({lowStockAlerts?.length || 0})</h3>
+            <div className="alerts-list">
+              {(lowStockAlerts || []).map(alert => (
+                <div key={alert.product._id} className="alert-item">
+                  <span className="alert-product">{alert.product.name}</span>
+                  <span className="alert-quantity">
+                    {alert.inventory.quantity} {alert.inventory.unit} remaining
+                  </span>
+                  <span className="alert-threshold">
+                    (Threshold: {alert.inventory.lowStockThreshold})
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Filters */}
-      <div className="inventory-filters">
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-        <label className="filter-checkbox">
+        {/* Filters */}
+        <div className="inventory-filters">
           <input
-            type="checkbox"
-            checked={filterLowStock}
-            onChange={(e) => setFilterLowStock(e.target.checked)}
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
           />
-          Show only low stock items
-        </label>
-      </div>
-
-      {error && (
-        <div className="error-message">
-          {error}
-          <button onClick={() => setError(null)}>✕</button>
+          <label className="filter-checkbox">
+            <input
+              type="checkbox"
+              checked={filterLowStock}
+              onChange={(e) => setFilterLowStock(e.target.checked)}
+            />
+            Show only low stock items
+          </label>
         </div>
-      )}
 
-      {/* Inventory Table */}
-      <div className="inventory-table-container">
-        <table className="inventory-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Current Stock</th>
-              <th>Unit</th>
-              <th>Status</th>
-              <th>Last Restocked</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(filteredInventory?.length || 0) === 0 ? (
+        {error && (
+          <div className="error-message">
+            {error}
+            <button onClick={() => setError(null)}>✕</button>
+          </div>
+        )}
+
+        {/* Inventory Table */}
+        <div className="inventory-table-container">
+          <table className="inventory-table">
+            <thead>
               <tr>
-                <td colSpan={7} className="no-data">
-                  No inventory items found
-                </td>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Current Stock</th>
+                <th>Unit</th>
+                <th>Status</th>
+                <th>Last Restocked</th>
+                <th>Actions</th>
               </tr>
-            ) : (
-              (filteredInventory || []).map(inv => (
-                <tr key={inv.productId} className={inv.isLowStock ? 'low-stock-row' : ''}>
-                  <td className="product-name">
-                    {inv.product?.name || 'Unknown Product'}
-                  </td>
-                  <td className="product-category">
-                    {inv.product?.category.replace('_', ' ') || '-'}
-                  </td>
-                  <td className="stock-quantity">
-                    {editingId === inv.productId ? (
-                      <div className="edit-quantity">
-                        <select
-                          value={updateOperation}
-                          onChange={(e) => setUpdateOperation(e.target.value as any)}
-                          className="operation-select"
-                        >
-                          <option value="set">Set to</option>
-                          <option value="add">Add</option>
-                          <option value="subtract">Subtract</option>
-                        </select>
-                        <input
-                          type="number"
-                          value={updateQuantity}
-                          onChange={(e) => setUpdateQuantity(Number(e.target.value))}
-                          min="0"
-                          className="quantity-input"
-                        />
-                      </div>
-                    ) : (
-                      <span className={inv.isOutOfStock ? 'out-of-stock' : ''}>
-                        {inv.quantity}
-                      </span>
-                    )}
-                  </td>
-                  <td>{inv.unit}</td>
-                  <td>
-                    <span className={`status-badge ${
-                      inv.isOutOfStock ? 'out-of-stock' : 
-                      inv.isLowStock ? 'low-stock' : 
-                      'in-stock'
-                    }`}>
-                      {inv.isOutOfStock ? '❌ Out of Stock' : 
-                       inv.isLowStock ? '⚠️ Low Stock' : 
-                       '✅ In Stock'}
-                    </span>
-                  </td>
-                  <td className="last-restocked">
-                    {new Date(inv.lastRestocked).toLocaleDateString()}
-                  </td>
-                  <td className="actions">
-                    {editingId === inv.productId ? (
-                      <div className="edit-actions">
-                        <button
-                          onClick={() => handleUpdateInventory(inv.productId)}
-                          disabled={updating}
-                          className="save-btn"
-                        >
-                          {updating ? 'Saving...' : 'Save'}
-                        </button>
-                        <button
-                          onClick={cancelEditing}
-                          disabled={updating}
-                          className="cancel-btn"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => startEditing(inv)}
-                        className="edit-btn"
-                      >
-                        Edit
-                      </button>
-                    )}
+            </thead>
+            <tbody>
+              {(filteredInventory?.length || 0) === 0 ? (
+                <tr>
+                  <td colSpan={7} className="no-data">
+                    No inventory items found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                (filteredInventory || []).map(inv => (
+                  <tr key={inv.productId} className={inv.isLowStock ? 'low-stock-row' : ''}>
+                    <td className="product-name">
+                      {inv.product?.name || 'Unknown Product'}
+                    </td>
+                    <td className="product-category">
+                      {inv.product?.category.replace('_', ' ') || '-'}
+                    </td>
+                    <td className="stock-quantity">
+                      {editingId === inv.productId ? (
+                        <div className="edit-quantity">
+                          <select
+                            value={updateOperation}
+                            onChange={(e) => setUpdateOperation(e.target.value as any)}
+                            className="operation-select"
+                          >
+                            <option value="set">Set to</option>
+                            <option value="add">Add</option>
+                            <option value="subtract">Subtract</option>
+                          </select>
+                          <input
+                            type="number"
+                            value={updateQuantity}
+                            onChange={(e) => setUpdateQuantity(Number(e.target.value))}
+                            min="0"
+                            className="quantity-input"
+                          />
+                        </div>
+                      ) : (
+                        <span className={inv.isOutOfStock ? 'out-of-stock' : ''}>
+                          {inv.quantity}
+                        </span>
+                      )}
+                    </td>
+                    <td>{inv.unit}</td>
+                    <td>
+                      <span className={`status-badge ${
+                        inv.isOutOfStock ? 'out-of-stock' : 
+                        inv.isLowStock ? 'low-stock' : 
+                        'in-stock'
+                      }`}>
+                        {inv.isOutOfStock ? '❌ Out of Stock' : 
+                         inv.isLowStock ? '⚠️ Low Stock' : 
+                         '✅ In Stock'}
+                      </span>
+                    </td>
+                    <td className="last-restocked">
+                      {new Date(inv.lastRestocked).toLocaleDateString()}
+                    </td>
+                    <td className="actions">
+                      {editingId === inv.productId ? (
+                        <div className="edit-actions">
+                          <button
+                            onClick={() => handleUpdateInventory(inv.productId)}
+                            disabled={updating}
+                            className="save-btn"
+                          >
+                            {updating ? 'Saving...' : 'Save'}
+                          </button>
+                          <button
+                            onClick={cancelEditing}
+                            disabled={updating}
+                            className="cancel-btn"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => startEditing(inv)}
+                          className="edit-btn"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Summary Stats */}
-      <div className="inventory-summary">
-        <div className="summary-card">
-          <h4>Total Products</h4>
-          <p className="summary-value">{inventory?.length || 0}</p>
-        </div>
-        <div className="summary-card">
-          <h4>Low Stock Items</h4>
-          <p className="summary-value warning">{lowStockAlerts?.length || 0}</p>
-        </div>
-        <div className="summary-card">
-          <h4>Out of Stock</h4>
-          <p className="summary-value danger">
-            {(inventory || []).filter(inv => inv.isOutOfStock).length}
-          </p>
-        </div>
-        <div className="summary-card">
-          <h4>In Stock</h4>
-          <p className="summary-value success">
-            {(inventory || []).filter(inv => !inv.isLowStock && !inv.isOutOfStock).length}
-          </p>
+        {/* Summary Stats */}
+        <div className="inventory-summary">
+          <div className="summary-card">
+            <h4>Total Products</h4>
+            <p className="summary-value">{inventory?.length || 0}</p>
+          </div>
+          <div className="summary-card">
+            <h4>Low Stock Items</h4>
+            <p className="summary-value warning">{lowStockAlerts?.length || 0}</p>
+          </div>
+          <div className="summary-card">
+            <h4>Out of Stock</h4>
+            <p className="summary-value danger">
+              {(inventory || []).filter(inv => inv.isOutOfStock).length}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>In Stock</h4>
+            <p className="summary-value success">
+              {(inventory || []).filter(inv => !inv.isLowStock && !inv.isOutOfStock).length}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

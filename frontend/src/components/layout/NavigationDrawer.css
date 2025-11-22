@@ -1,0 +1,252 @@
+/**
+ * NavigationDrawer Styles
+ * 
+ * Implements slide-in animation and overlay styling.
+ * Requirements: 1.2, 6.1
+ */
+
+/* Overlay */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms ease-out, visibility 300ms ease-out;
+  z-index: 999;
+}
+
+.drawer-overlay--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Navigation Drawer */
+.navigation-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 300ms ease-out;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.navigation-drawer--open {
+  transform: translateX(0);
+}
+
+/* Tablet and larger */
+@media (min-width: 768px) {
+  .navigation-drawer {
+    width: 320px;
+  }
+}
+
+/* Drawer Header */
+.drawer-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid #E0E0E0;
+  background-color: #FFFFFF;
+}
+
+.drawer-header__logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.drawer-header__logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.drawer-header__brand-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+}
+
+.drawer-header__tagline {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Drawer Menu */
+.drawer-menu {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.drawer-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  color: #333333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  transition: background-color 200ms ease-in-out;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.drawer-menu__item:hover {
+  background-color: #F5F5F5;
+}
+
+.drawer-menu__item--active {
+  background-color: #FFF9E6;
+  color: #D4A520;
+  font-weight: 500;
+}
+
+.drawer-menu__item--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #F4C430;
+}
+
+.drawer-menu__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.drawer-menu__label {
+  flex: 1;
+}
+
+.drawer-menu__badge {
+  background-color: #E53935;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Drawer Footer */
+.drawer-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #E0E0E0;
+  background-color: #FFFFFF;
+}
+
+.drawer-footer__pause-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  margin-bottom: 12px;
+}
+
+.drawer-footer__pause-label {
+  font-size: 14px;
+  color: #333333;
+  font-weight: 500;
+}
+
+.drawer-footer__version {
+  font-size: 12px;
+  color: #999999;
+  text-align: center;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  background-color: #E0E0E0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 200ms ease-in-out;
+  border: none;
+  padding: 0;
+}
+
+.toggle-switch--active {
+  background-color: #F4C430;
+}
+
+.toggle-switch__slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  transition: transform 200ms ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch--active .toggle-switch__slider {
+  transform: translateX(20px);
+}
+
+/* Accessibility */
+.navigation-drawer:focus {
+  outline: none;
+}
+
+.drawer-menu__item:focus {
+  outline: 2px solid #4A90E2;
+  outline-offset: -2px;
+}
+
+.toggle-switch:focus {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+.navigation-drawer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.navigation-drawer::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+.navigation-drawer::-webkit-scrollbar-thumb {
+  background: #CCCCCC;
+  border-radius: 3px;
+}
+
+.navigation-drawer::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}

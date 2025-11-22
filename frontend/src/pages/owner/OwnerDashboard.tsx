@@ -2,124 +2,88 @@
  * Owner Dashboard Page
  * 
  * Main dashboard for business owner with inventory management, order management, and analytics.
+ * Updated with new design system: NavigationDrawer, TopHeader, and card-based layout.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Layout from '../../components/common/Layout';
 import { useAuth } from '../../contexts';
-import InventoryManagement from './InventoryManagement';
-import OrderManagement from './OrderManagement';
-import Analytics from './Analytics';
-import ProductManagement from './ProductManagement';
 import './OwnerDashboard.css';
 
-type DashboardView = 'overview' | 'products' | 'inventory' | 'orders' | 'analytics';
-
 const OwnerDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
-  const [currentView, setCurrentView] = useState<DashboardView>('overview');
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const renderView = () => {
-    switch (currentView) {
-      case 'products':
-        return <ProductManagement />;
-      case 'inventory':
-        return <InventoryManagement />;
-      case 'orders':
-        return <OrderManagement />;
-      case 'analytics':
-        return <Analytics />;
-      default:
-        return (
-          <div className="overview-content">
-            <section className="welcome-section">
-              <h2>Welcome to Your Dashboard</h2>
-              <p>Manage your business operations from one central location</p>
-            </section>
+  const dashboardCards = [
+    {
+      id: 'products',
+      icon: '🛍️',
+      title: 'Product Management',
+      description: 'Add and manage your product catalog',
+      route: '/owner/products',
+    },
+    {
+      id: 'inventory',
+      icon: '📦',
+      title: 'Inventory Management',
+      description: 'Manage stock levels and track inventory',
+      route: '/owner/inventory',
+    },
+    {
+      id: 'orders',
+      icon: '🛒',
+      title: 'Order Management',
+      description: 'View and manage all customer orders',
+      route: '/owner/orders',
+    },
+    {
+      id: 'analytics',
+      icon: '📊',
+      title: 'Analytics',
+      description: 'View sales trends and business insights',
+      route: '/owner/analytics',
+    },
+  ];
 
-            <div className="dashboard-cards">
-              <div className="dashboard-card" onClick={() => setCurrentView('products')}>
-                <div className="card-icon">🛍️</div>
-                <h3>Product Management</h3>
-                <p>Add and manage your product catalog</p>
-                <button className="card-button">Open →</button>
-              </div>
-
-              <div className="dashboard-card" onClick={() => setCurrentView('inventory')}>
-                <div className="card-icon">📦</div>
-                <h3>Inventory Management</h3>
-                <p>Manage stock levels and track inventory</p>
-                <button className="card-button">Open →</button>
-              </div>
-
-              <div className="dashboard-card" onClick={() => setCurrentView('orders')}>
-                <div className="card-icon">🛒</div>
-                <h3>Order Management</h3>
-                <p>View and manage all customer orders</p>
-                <button className="card-button">Open →</button>
-              </div>
-
-              <div className="dashboard-card" onClick={() => setCurrentView('analytics')}>
-                <div className="card-icon">📊</div>
-                <h3>Analytics</h3>
-                <p>View sales trends and business insights</p>
-                <button className="card-button">Open →</button>
-              </div>
-            </div>
-          </div>
-        );
-    }
+  const handleCardClick = (route: string) => {
+    navigate(route);
   };
 
   return (
-    <div className="owner-dashboard">
-      <header className="dashboard-header">
-        <div className="header-left">
-          <h1>Indostar E-commerce - Owner Portal</h1>
-          <nav className="dashboard-nav">
-            <button
-              className={currentView === 'overview' ? 'active' : ''}
-              onClick={() => setCurrentView('overview')}
-            >
-              Overview
-            </button>
-            <button
-              className={currentView === 'products' ? 'active' : ''}
-              onClick={() => setCurrentView('products')}
-            >
-              Products
-            </button>
-            <button
-              className={currentView === 'inventory' ? 'active' : ''}
-              onClick={() => setCurrentView('inventory')}
-            >
-              Inventory
-            </button>
-            <button
-              className={currentView === 'orders' ? 'active' : ''}
-              onClick={() => setCurrentView('orders')}
-            >
-              Orders
-            </button>
-            <button
-              className={currentView === 'analytics' ? 'active' : ''}
-              onClick={() => setCurrentView('analytics')}
-            >
-              Analytics
-            </button>
-          </nav>
-        </div>
-        <div className="header-right">
-          <span className="user-name">Welcome, {user?.name}</span>
-          <button onClick={logout} className="logout-btn">
-            Logout
-          </button>
-        </div>
-      </header>
+    <Layout>
+      <div className="owner-dashboard">
+        <section className="welcome-section">
+          <h2>Welcome, {user?.name}</h2>
+          <p>Manage your business operations from one central location</p>
+        </section>
 
-      <main className="dashboard-main">
-        {renderView()}
-      </main>
-    </div>
+        <div className="dashboard-cards">
+          {dashboardCards.map((card) => (
+            <article
+              key={card.id}
+              className="dashboard-card"
+              onClick={() => handleCardClick(card.route)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleCardClick(card.route);
+                }
+              }}
+            >
+              <div className="dashboard-card__icon">{card.icon}</div>
+              <h3 className="dashboard-card__title">{card.title}</h3>
+              <p className="dashboard-card__description">{card.description}</p>
+              <button className="dashboard-card__button" aria-hidden="true">
+                Open →
+              </button>
+            </article>
+          ))}
+        </div>
+      </div>
+    </Layout>
   );
 };
 

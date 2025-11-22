@@ -9,17 +9,19 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { getProducts } from '../../services';
-import { Product, ProductCategory } from '../../types';
+import { Product } from '../../types';
+import CategoryTabs from '../../components/consumer/CategoryTabs';
+import ProductGrid from '../../components/consumer/ProductGrid';
 import './HomePage.css';
 
 interface CategoryCard {
-  id: ProductCategory;
+  id: string;
   name: string;
   icon: string;
   description: string;
 }
 
-const categories: CategoryCard[] = [
+const categoryCards: CategoryCard[] = [
   {
     id: 'jaggery',
     name: 'Jaggery',
@@ -52,15 +54,26 @@ const categories: CategoryCard[] = [
   }
 ];
 
+// Categories for tabs (Requirements 3.1, 3.2)
+const categoryTabs = [
+  { id: 'all', name: 'All Products' },
+  { id: 'milk', name: 'Milk' },
+  { id: 'jaggery', name: 'Jaggery' },
+  { id: 'oil', name: 'Oil' },
+  { id: 'chutney_powder', name: 'Chutney Powder' },
+  { id: 'pickles', name: 'Pickles' },
+];
+
 const HomePage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
   useEffect(() => {
-    loadFeaturedProducts();
+    loadAllProducts();
     
     // Setup scroll reveal animation
     const observer = new IntersectionObserver(
@@ -81,40 +94,49 @@ const HomePage: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Auto-advance carousel
+  // Filter products when category changes
   useEffect(() => {
-    if (featuredProducts.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % featuredProducts.length);
-      }, 5000);
-      return () => clearInterval(interval);
+    if (activeCategory === 'all') {
+      setFilteredProducts(allProducts);
+    } else {
+      setFilteredProducts(allProducts.filter(p => p.category === activeCategory));
     }
-    return undefined;
-  }, [featuredProducts.length]);
+  }, [activeCategory, allProducts]);
 
-  const loadFeaturedProducts = async () => {
+  const loadAllProducts = async () => {
     try {
-      const response: any = await getProducts({ limit: 6, isActive: true });
-      // Backend returns {products: [...]} not {data: [...]}
-      setFeaturedProducts(response.products || response.data || []);
+      setProductsLoading(true);
+      const response: any = await getProducts({ isActive: true });
+      const products = response.products || response.data || [];
+      setAllProducts(products);
+      setFilteredProducts(products);
     } catch (error) {
-      console.error('Failed to load featured products:', error);
-      setFeaturedProducts([]);
+      console.error('Failed to load products:', error);
+      setAllProducts([]);
+      setFilteredProducts([]);
     } finally {
-      setLoading(false);
+      setProductsLoading(false);
     }
   };
 
-  const handleCategoryClick = (category: ProductCategory) => {
+  const handleCategoryClick = (category: string) => {
     navigate(`/consumer/products?category=${category}`);
   };
 
-  const handleProductClick = (productId: string) => {
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategory(categoryId);
+  };
+
+  const handleSubscribe = (productId: string) => {
+    navigate(`/consumer/subscriptions/create?productId=${productId}`);
+  };
+
+  const handleBuyOnce = (productId: string) => {
     navigate(`/consumer/products/${productId}`);
   };
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
+  const handleShare = (productId: string) => {
+    console.log('Share product:', productId);
   };
 
   return (
@@ -181,62 +203,34 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Products Carousel */}
-      {!loading && featuredProducts.length > 0 && (
-        <section className="featured-section scroll-reveal">
-          <h2 className="section-title">Featured Products</h2>
-          <div className="carousel-container">
-            <div
-              className="carousel-track"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {featuredProducts.map((product) => (
-                <div
-                  key={product._id}
-                  className="carousel-slide"
-                  onClick={() => handleProductClick(product._id)}
-                >
-                  <div className="product-card hover-lift">
-                    <div className="product-image">
-                      {product.images && product.images.length > 0 ? (
-                        <img src={product.images[0]} alt={product.name} />
-                      ) : (
-                        <div className="product-image-placeholder">📦</div>
-                      )}
-                    </div>
-                    <div className="product-info">
-                      <h3 className="product-name">{product.name}</h3>
-                      <p className="product-description">{product.description}</p>
-                      <div className="product-footer">
-                        <span className="product-price">
-                          ₹{product.price.consumer}/{product.unit}
-                        </span>
-                        <button className="add-to-cart-btn">View Details</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="carousel-indicators">
-              {featuredProducts.map((_, index) => (
-                <button
-                  key={index}
-                  className={`indicator ${index === currentSlide ? 'active' : ''}`}
-                  onClick={() => goToSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Products Section with CategoryTabs and ProductGrid (Requirements 2.1, 2.2, 2.3, 3.1, 3.2) */}
+      <section className="products-section scroll-reveal">
+        <h2 className="section-title">Our Products</h2>
+        
+        {/* Category Tabs */}
+        <CategoryTabs
+          categories={categoryTabs}
+          activeCategory={activeCategory}
+          onCategoryChange={handleCategoryChange}
+        />
+        
+        {/* Product Grid */}
+        <div className="products-grid-container">
+          <ProductGrid
+            products={filteredProducts}
+            loading={productsLoading}
+            onSubscribe={handleSubscribe}
+            onBuyOnce={handleBuyOnce}
+            onShare={handleShare}
+          />
+        </div>
+      </section>
 
       {/* Category Navigation */}
       <section className="categories-section scroll-reveal">
         <h2 className="section-title">Shop by Category</h2>
         <div className="categories-grid">
-          {categories.map((category, index) => (
+          {categoryCards.map((category, index) => (
             <div
               key={category.id}
               className="category-card hover-scale"

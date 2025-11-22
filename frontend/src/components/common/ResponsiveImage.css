@@ -1,0 +1,100 @@
+/**
+ * ResponsiveImage Styles
+ * 
+ * Implements requirements: 12.4
+ */
+
+.responsive-image {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--color-background);
+}
+
+/* Image element */
+.responsive-image__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: opacity var(--transition-base);
+}
+
+/* Loading state */
+.responsive-image--loading .responsive-image__img {
+  opacity: 0;
+}
+
+/* Loaded state */
+.responsive-image--loaded .responsive-image__img {
+  opacity: 1;
+}
+
+/* Placeholder (shown while loading) */
+.responsive-image__placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-background) 0%,
+    #e0e0e0 50%,
+    var(--color-background) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Error state */
+.responsive-image__error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  gap: var(--spacing-sm);
+}
+
+.responsive-image__error-icon {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.responsive-image__error-text {
+  font-size: var(--font-size-sm);
+  opacity: 0.7;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .responsive-image__img {
+    transition: none;
+  }
+
+  .responsive-image__placeholder {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .responsive-image__error {
+    border: 2px solid var(--color-border-dark);
+  }
+}

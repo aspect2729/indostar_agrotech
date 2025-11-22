@@ -1,18 +1,20 @@
 /**
  * Product Catalog Component
  * 
- * Displays all products with filtering, search, and pagination.
- * Implements requirements: 1.1, 8.1, 8.2, 8.3, 8.5, 7.1, 7.2
+ * Displays all products with filtering using new design components.
+ * Implements requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 13.1, 13.4
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts';
 import { getProducts } from '../../services';
-import { Product, ProductCategory } from '../../types';
+import { Product } from '../../types';
+import CategoryTabs, { Category } from '../../components/consumer/CategoryTabs';
+import ProductGrid from '../../components/consumer/ProductGrid';
 import './ProductCatalog.css';
 
-const categories: { id: ProductCategory | 'all'; name: string }[] = [
+const categories: Category[] = [
   { id: 'all', name: 'All Products' },
   { id: 'jaggery', name: 'Jaggery' },
   { id: 'oil', name: 'Oil' },
@@ -25,11 +27,13 @@ const ProductCatalog: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const contentRef = useRef<HTMLDivElement>(null);
   
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
@@ -38,6 +42,7 @@ const ProductCatalog: React.FC = () => {
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params: any = {
         limit: ITEMS_PER_PAGE,
@@ -58,8 +63,9 @@ const ProductCatalog: React.FC = () => {
       setProducts(response.products || response.data || []);
       setTotal(response.total || 0);
       setHasMore(response.hasMore || false);
-    } catch (error) {
-      console.error('Failed to load products:', error);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      setError(err instanceof Error ? err : new Error('Failed to load products'));
     } finally {
       setLoading(false);
     }
@@ -68,8 +74,8 @@ const ProductCatalog: React.FC = () => {
   useEffect(() => {
     // Get category from URL params
     const categoryParam = searchParams.get('category');
-    if (categoryParam && categoryParam !== 'all') {
-      setSelectedCategory(categoryParam as ProductCategory);
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
     }
   }, [searchParams]);
 
@@ -77,33 +83,13 @@ const ProductCatalog: React.FC = () => {
     loadProducts();
   }, [loadProducts]);
 
-  useEffect(() => {
-    // Setup scroll reveal animation
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('revealed');
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    document.querySelectorAll('.scroll-reveal').forEach((el) => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [products]);
-
-  const handleCategoryChange = (category: ProductCategory | 'all') => {
-    setSelectedCategory(category);
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
     setPage(1);
     
-    // Update URL params
-    if (category !== 'all') {
-      setSearchParams({ category });
+    // Update URL params (Requirement 3.3)
+    if (categoryId !== 'all') {
+      setSearchParams({ category: categoryId });
     } else {
       setSearchParams({});
     }
@@ -114,13 +100,28 @@ const ProductCatalog: React.FC = () => {
     setPage(1);
   };
 
-  const handleProductClick = (productId: string) => {
-    navigate(`/consumer/products/${productId}`);
-  };
-
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubscribe = (productId: string) => {
+    // Navigate to subscription creation page
+    navigate(`/consumer/subscriptions/create?productId=${productId}`);
+  };
+
+  const handleBuyOnce = (productId: string) => {
+    // Add to cart and navigate to cart
+    navigate(`/consumer/products/${productId}`);
+  };
+
+  const handleShare = (productId: string) => {
+    // Share functionality is handled in ProductCard
+    console.log('Share product:', productId);
+  };
+
+  const handleRetry = () => {
+    loadProducts();
   };
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
@@ -158,8 +159,8 @@ const ProductCatalog: React.FC = () => {
         </div>
       </header>
 
-      <div className="catalog-container">
-        {/* Search and Filter Section */}
+      <div className="catalog-container" ref={contentRef}>
+        {/* Search Section */}
         <section className="filter-section slide-in-down">
           <div className="search-bar">
             <input
@@ -172,20 +173,6 @@ const ProductCatalog: React.FC = () => {
             <span className="search-icon">🔍</span>
           </div>
 
-          <div className="category-filters">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                className={`category-filter ${
-                  selectedCategory === category.id ? 'active' : ''
-                }`}
-                onClick={() => handleCategoryChange(category.id)}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-
           <div className="results-info">
             <p>
               {loading ? 'Loading...' : `${total} product${total !== 1 ? 's' : ''} found`}
@@ -193,75 +180,28 @@ const ProductCatalog: React.FC = () => {
           </div>
         </section>
 
-        {/* Products Grid */}
+        {/* Category Tabs - Requirement 3.1, 3.2 */}
+        <CategoryTabs
+          categories={categories}
+          activeCategory={selectedCategory}
+          onCategoryChange={handleCategoryChange}
+          scrollTargetRef={contentRef}
+        />
+
+        {/* Products Grid - Requirements 2.1, 2.2, 2.3, 13.1, 13.4 */}
         <section className="products-section">
-          {loading ? (
-            <div className="products-grid">
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="product-card skeleton-card">
-                  <div className="skeleton skeleton-image"></div>
-                  <div className="skeleton-content">
-                    <div className="skeleton skeleton-title"></div>
-                    <div className="skeleton skeleton-text"></div>
-                    <div className="skeleton skeleton-text"></div>
-                    <div className="skeleton skeleton-price"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : products.length === 0 ? (
-            <div className="no-products">
-              <div className="no-products-icon">📦</div>
-              <h3>No products found</h3>
-              <p>Try adjusting your search or filters</p>
-            </div>
-          ) : (
-            <div className="products-grid">
-              {products && products.map((product, index) => (
-                <div
-                  key={product._id}
-                  className="product-card hover-lift scroll-reveal"
-                  onClick={() => handleProductClick(product._id)}
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <div className="product-image">
-                    {product.images && product.images.length > 0 ? (
-                      <img src={product.images[0]} alt={product.name} />
-                    ) : (
-                      <div className="product-image-placeholder">📦</div>
-                    )}
-                    {product.interStateDelivery && (
-                      <span className="delivery-badge">🚚 Inter-state delivery</span>
-                    )}
-                  </div>
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="product-category">
-                      {product.category.replace('_', ' ').toUpperCase()}
-                    </p>
-                    <p className="product-description">{product.description}</p>
-                    <div className="product-footer">
-                      <span className="product-price">
-                        ₹{product.price.consumer}/{product.unit}
-                      </span>
-                      <button
-                        className="view-details-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleProductClick(product._id);
-                        }}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <ProductGrid
+            products={products}
+            loading={loading}
+            error={error}
+            onRetry={handleRetry}
+            onSubscribe={handleSubscribe}
+            onBuyOnce={handleBuyOnce}
+            onShare={handleShare}
+          />
 
           {/* Pagination */}
-          {!loading && totalPages > 1 && (
+          {!loading && !error && totalPages > 1 && (
             <div className="pagination">
               <button
                 className="pagination-btn"

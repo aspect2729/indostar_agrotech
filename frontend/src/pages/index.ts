@@ -5,6 +5,9 @@
 export { default as LoginPage } from './LoginPage';
 export { default as DevLogin } from './DevLogin';
 
+// Common pages
+export { default as Notifications } from './common/Notifications';
+
 // Consumer pages
 export { default as HomePage } from './consumer/HomePage';
 export { default as ProductCatalog } from './consumer/ProductCatalog';

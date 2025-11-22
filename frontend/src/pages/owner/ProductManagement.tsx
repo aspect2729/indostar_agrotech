@@ -2,9 +2,12 @@
  * Product Management Component
  * 
  * Allows owner to view, add, edit, and manage products.
+ * Updated with new design system: Layout, ProductCard components
  */
 
 import React, { useState, useEffect } from 'react';
+import Layout from '../../components/common/Layout';
+import ProductCard from '../../components/consumer/ProductCard';
 import { getProducts, createProduct } from '../../services';
 import { Product, ProductCategory } from '../../types';
 import './ProductManagement.css';
@@ -104,50 +107,63 @@ const ProductManagement: React.FC = () => {
     }
   };
 
+  const handleSubscribe = (productId: string) => {
+    console.log('Subscribe to product:', productId);
+    // Owner view - no subscription action needed
+  };
+
+  const handleBuyOnce = (productId: string) => {
+    console.log('Buy once product:', productId);
+    // Owner view - no buy action needed
+  };
+
+  const handleShare = (productId: string) => {
+    console.log('Share product:', productId);
+  };
+
   return (
-    <div className="product-management">
-      <div className="page-header">
-        <h1>Product Management</h1>
-        <button className="add-product-btn" onClick={() => setShowAddModal(true)}>
-          + Add New Product
-        </button>
-      </div>
-
-      {error && <div className="error-message">{error}</div>}
-
-      {loading ? (
-        <div className="loading">Loading products...</div>
-      ) : products.length === 0 ? (
-        <div className="no-products">
-          <p>No products found. Click "Add New Product" to get started!</p>
+    <Layout>
+      <div className="product-management">
+        <div className="page-header">
+          <h2 className="page-title">Product Management</h2>
+          <button className="add-product-btn" onClick={() => setShowAddModal(true)}>
+            + Add New Product
+          </button>
         </div>
-      ) : (
-        <div className="products-grid">
-          {(products || []).map(product => (
-            <div key={product._id} className="product-card">
-              <h3>{product.name}</h3>
-              <p className="category">{product.category.replace('_', ' ').toUpperCase()}</p>
-              <p className="description">{product.description}</p>
-              <div className="prices">
-                <div>Consumer: ₹{product.price.consumer}/{product.unit}</div>
-                <div>Distributor: ₹{product.price.distributor}/{product.unit}</div>
+
+        {error && <div className="error-message">{error}</div>}
+
+        {loading ? (
+          <div className="loading">
+            <div className="spinner"></div>
+            <p>Loading products...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="no-products">
+            <p>No products found. Click "Add New Product" to get started!</p>
+          </div>
+        ) : (
+          <div className="products-grid">
+            {(products || []).map(product => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onSubscribe={handleSubscribe}
+                onBuyOnce={handleBuyOnce}
+                onShare={handleShare}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Add Product Modal */}
+        {showAddModal && (
+          <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Add New Product</h2>
+                <button className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
               </div>
-              {product.interStateDelivery && (
-                <span className="badge">Inter-state delivery</span>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Add Product Modal */}
-      {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Add New Product</h2>
-              <button className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
-            </div>
 
             <form onSubmit={handleSubmit} className="product-form">
               <div className="form-group">
@@ -241,10 +257,11 @@ const ProductManagement: React.FC = () => {
                 </button>
               </div>
             </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Layout>
   );
 };
 

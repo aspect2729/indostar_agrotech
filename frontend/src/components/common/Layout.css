@@ -1,0 +1,101 @@
+/**
+ * Layout Component Styles
+ * 
+ * Main layout wrapper with TopHeader, content area, and BottomNavigation.
+ * Implements requirements: 1.5, 9.1, 12.1, 12.2
+ */
+
+/* Layout Container */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
+/* Skip Link for Keyboard Navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-decoration: none;
+  font-weight: 600;
+  z-index: 1000;
+  border-radius: 0 0 var(--border-radius-md) 0;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  overflow-x: hidden;
+}
+
+/* Mobile Layout (< 768px) */
+@media (max-width: 767px) {
+  .main-content {
+    /* Account for fixed TopHeader and BottomNavigation */
+    margin-top: var(--header-height-mobile);
+    margin-bottom: var(--bottom-nav-height);
+    padding: var(--spacing-md);
+  }
+}
+
+/* Tablet Layout (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .main-content {
+    /* Account for fixed TopHeader only (no bottom nav on tablet+) */
+    margin-top: var(--header-height-desktop);
+    margin-bottom: 0;
+    padding: var(--spacing-lg);
+    max-width: 1024px;
+  }
+}
+
+/* Desktop Layout (>= 1024px) */
+@media (min-width: 1024px) {
+  .main-content {
+    /* Account for fixed TopHeader only */
+    margin-top: var(--header-height-desktop);
+    margin-bottom: 0;
+    padding: var(--spacing-xl);
+    max-width: 1280px;
+  }
+}
+
+/* Ensure content doesn't overflow horizontally */
+.main-content > * {
+  max-width: 100%;
+}
+
+/* Smooth transitions for layout changes */
+.main-content {
+  transition: margin var(--transition-base), padding var(--transition-base);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .main-content {
+    transition: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .main-content {
+    margin: 0;
+    padding: 0;
+  }
+}

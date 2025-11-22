@@ -10,6 +10,29 @@
    PAGE TRANSITION ANIMATIONS
    ============================================ */
 
+/* Page Container for Transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 200ms ease-in, transform 200ms ease-in;
+}
+
 /* Fade Animations */
 .fade-in {
   animation: fadeIn 300ms ease-in-out;
@@ -572,12 +595,292 @@
 .duration-slow { animation-duration: 300ms; }
 
 /* Will Change (Performance Optimization) */
+/* Use sparingly - only for complex animations that need GPU acceleration */
 .will-change-transform {
   will-change: transform;
 }
 
 .will-change-opacity {
   will-change: opacity;
+}
+
+.will-change-transform-opacity {
+  will-change: transform, opacity;
+}
+
+/* Remove will-change after animation completes to free resources */
+.will-change-auto {
+  will-change: auto;
+}
+
+/* GPU Acceleration Helpers */
+.gpu-accelerate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Performance-optimized animations using transform and opacity only */
+.perf-fade {
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.perf-fade--visible {
+  opacity: 1;
+}
+
+.perf-slide {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+.perf-slide--visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.perf-scale {
+  transform: scale(0.95);
+  opacity: 0;
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+.perf-scale--visible {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* ============================================
+   SID'S FARM SPECIFIC ANIMATIONS
+   ============================================ */
+
+/* Navigation Drawer Slide Animation (300ms ease-out) */
+.drawer-slide-in {
+  animation: drawerSlideIn 300ms ease-out;
+}
+
+.drawer-slide-out {
+  animation: drawerSlideOut 300ms ease-out;
+}
+
+@keyframes drawerSlideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes drawerSlideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+/* Button Tap Feedback Animation */
+.button-tap {
+  animation: buttonTap 200ms ease-out;
+}
+
+@keyframes buttonTap {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Button Hover Darken (10% darker) */
+.button-hover-darken {
+  transition: filter 200ms ease-out;
+}
+
+.button-hover-darken:hover {
+  filter: brightness(0.9);
+}
+
+/* Tab Indicator Slide Animation */
+.tab-indicator-slide {
+  transition: transform 300ms ease-out, width 300ms ease-out;
+}
+
+/* Content Fade In (for loaded content) */
+.content-fade-in {
+  animation: contentFadeIn 300ms ease-out;
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Product Card Hover Animation */
+.product-card-hover {
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+}
+
+.product-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bottom Navigation Item Active */
+.bottom-nav-active {
+  position: relative;
+}
+
+.bottom-nav-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  animation: navDotPulse 1s ease-in-out infinite;
+}
+
+@keyframes navDotPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.2);
+  }
+}
+
+/* Overlay Fade In/Out */
+.overlay-fade-in {
+  animation: overlayFadeIn 300ms ease-out;
+}
+
+.overlay-fade-out {
+  animation: overlayFadeOut 300ms ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Scroll to Top Reset Animation */
+.scroll-reset {
+  scroll-behavior: smooth;
+}
+
+/* Badge Pulse Animation */
+.badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* Long Press Ripple Effect */
+.long-press-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.long-press-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translate(-50%, -50%);
+  animation: ripple 600ms ease-out;
+}
+
+@keyframes ripple {
+  to {
+    width: 200%;
+    height: 200%;
+    opacity: 0;
+  }
+}
+
+/* Skeleton Shimmer for Loading States */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-background) 0%,
+    var(--color-border-light) 50%,
+    var(--color-background) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty State Illustration Float */
+.empty-state-float {
+  animation: emptyStateFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyStateFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* ============================================
@@ -598,5 +901,16 @@
   .scroll-reveal-stagger {
     opacity: 1;
     transform: none;
+  }
+  
+  .drawer-slide-in,
+  .drawer-slide-out,
+  .button-tap,
+  .content-fade-in,
+  .product-card-hover,
+  .overlay-fade-in,
+  .overlay-fade-out {
+    animation: none !important;
+    transition: none !important;
   }
 }

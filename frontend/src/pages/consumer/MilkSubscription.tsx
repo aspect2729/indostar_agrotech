@@ -12,6 +12,7 @@ import {
   pauseSubscription,
   resumeSubscription,
   cancelSubscription,
+  updateSubscription,
   Subscription,
   MonthlyBill
 } from '../../services/subscriptionService';
@@ -26,10 +27,18 @@ const MilkSubscription: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showAdjustModal, setShowAdjustModal] = useState(false);
   const [showBillModal, setShowBillModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [adjustmentDate, setAdjustmentDate] = useState('');
   const [adjustmentQuantity, setAdjustmentQuantity] = useState('');
   const [adjustmentNotes, setAdjustmentNotes] = useState('');
   const [billMonth, setBillMonth] = useState('');
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
+  // Edit form state
+  const [editQuantity, setEditQuantity] = useState('');
+  const [editDeliveryTime, setEditDeliveryTime] = useState<'morning' | 'evening'>('morning');
+  const [editSkipDays, setEditSkipDays] = useState<string[]>([]);
 
   useEffect(() => {
     loadSubscriptions();
@@ -91,19 +100,29 @@ const MilkSubscription: React.FC = () => {
     if (!confirm('Are you sure you want to pause this subscription?')) return;
     
     try {
+      setActionLoading(subscriptionId);
       await pauseSubscription(subscriptionId);
-      loadSubscriptions();
+      await loadSubscriptions();
+      setSuccessMessage('Subscription paused successfully');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to pause subscription');
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleResume = async (subscriptionId: string) => {
     try {
+      setActionLoading(subscriptionId);
       await resumeSubscription(subscriptionId);
-      loadSubscriptions();
+      await loadSubscriptions();
+      setSuccessMessage('Subscription resumed successfully');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to resume subscription');
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -111,11 +130,49 @@ const MilkSubscription: React.FC = () => {
     if (!confirm('Are you sure you want to cancel this subscription? This action cannot be undone.')) return;
     
     try {
+      setActionLoading(subscriptionId);
       await cancelSubscription(subscriptionId);
-      loadSubscriptions();
+      await loadSubscriptions();
+      setSuccessMessage('Subscription cancelled successfully');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to cancel subscription');
+    } finally {
+      setActionLoading(null);
     }
+  };
+
+  const handleEditSubscription = async () => {
+    if (!selectedSubscription || !editQuantity) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      setActionLoading(selectedSubscription._id);
+      await updateSubscription(selectedSubscription._id, {
+        default_quantity_liters: parseFloat(editQuantity),
+        delivery_time_preference: editDeliveryTime,
+        skip_days: editSkipDays
+      });
+      
+      setShowEditModal(false);
+      await loadSubscriptions();
+      setSuccessMessage('Subscription updated successfully');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to update subscription');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const openEditModal = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
+    setEditQuantity(subscription.default_quantity_liters.toString());
+    setEditDeliveryTime(subscription.delivery_time_preference);
+    setEditSkipDays(subscription.skip_days);
+    setShowEditModal(true);
   };
 
   const getMinAdjustmentDate = () => {
@@ -145,6 +202,13 @@ const MilkSubscription: React.FC = () => {
         <div className="error-message">
           {error}
           <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="success-message">
+          {successMessage}
+          <button onClick={() => setSuccessMessage(null)}>×</button>
         </div>
       )}
 
@@ -204,15 +268,49 @@ const MilkSubscription: React.FC = () => {
                 </div>
               </div>
 
+              {/* Pause/Resume Toggle */}
+              {subscription.status !== 'cancelled' && (
+                <div className="subscription-toggle">
+                  <span className="toggle-label">
+                    {actionLoading === subscription._id 
+                      ? 'Updating...' 
+                      : subscription.status === 'paused' ? 'Paused' : 'Active'}
+                  </span>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={subscription.status === 'active'}
+                      disabled={actionLoading === subscription._id}
+                      onChange={() => {
+                        if (subscription.status === 'active') {
+                          handlePause(subscription._id);
+                        } else {
+                          handleResume(subscription._id);
+                        }
+                      }}
+                    />
+                    <span className="toggle-slider"></span>
+                  </label>
+                </div>
+              )}
+
               <div className="subscription-actions">
-                {subscription.status === 'active' && (
+                {subscription.status !== 'cancelled' && (
                   <>
+                    <button
+                      className="btn-secondary"
+                      onClick={() => openEditModal(subscription)}
+                      disabled={actionLoading === subscription._id}
+                    >
+                      {actionLoading === subscription._id ? 'Loading...' : 'Edit'}
+                    </button>
                     <button
                       className="btn-secondary"
                       onClick={() => {
                         setSelectedSubscription(subscription);
                         setShowAdjustModal(true);
                       }}
+                      disabled={actionLoading === subscription._id}
                     >
                       Adjust Quantity
                     </button>
@@ -222,43 +320,18 @@ const MilkSubscription: React.FC = () => {
                         setSelectedSubscription(subscription);
                         handleViewBill(subscription);
                       }}
+                      disabled={actionLoading === subscription._id}
                     >
                       View Bill
                     </button>
                     <button
-                      className="btn-warning"
-                      onClick={() => handlePause(subscription._id)}
+                      className="btn-danger"
+                      onClick={() => handleCancel(subscription._id)}
+                      disabled={actionLoading === subscription._id}
                     >
-                      Pause
+                      {actionLoading === subscription._id ? 'Cancelling...' : 'Cancel'}
                     </button>
                   </>
-                )}
-                {subscription.status === 'paused' && (
-                  <>
-                    <button
-                      className="btn-success"
-                      onClick={() => handleResume(subscription._id)}
-                    >
-                      Resume
-                    </button>
-                    <button
-                      className="btn-secondary"
-                      onClick={() => {
-                        setSelectedSubscription(subscription);
-                        handleViewBill(subscription);
-                      }}
-                    >
-                      View Bill
-                    </button>
-                  </>
-                )}
-                {subscription.status !== 'cancelled' && (
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleCancel(subscription._id)}
-                  >
-                    Cancel
-                  </button>
                 )}
               </div>
             </div>
@@ -314,6 +387,81 @@ const MilkSubscription: React.FC = () => {
               </button>
               <button className="btn-primary" onClick={handleAdjustQuantity}>
                 Save Adjustment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Subscription Modal */}
+      {showEditModal && selectedSubscription && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Edit Subscription</h2>
+              <button className="close-btn" onClick={() => setShowEditModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Daily Quantity (Liters) *</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  min="0.5"
+                  value={editQuantity}
+                  onChange={(e) => setEditQuantity(e.target.value)}
+                  placeholder="Enter quantity in liters"
+                />
+              </div>
+              <div className="form-group">
+                <label>Delivery Time *</label>
+                <select
+                  value={editDeliveryTime}
+                  onChange={(e) => setEditDeliveryTime(e.target.value as 'morning' | 'evening')}
+                  style={{
+                    width: '100%',
+                    padding: 'var(--spacing-sm)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-input)',
+                    fontSize: 'var(--font-size-body)'
+                  }}
+                >
+                  <option value="morning">Morning</option>
+                  <option value="evening">Evening</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Skip Days (Optional)</label>
+                <div className="skip-days-selector">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                    <label key={day} className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={editSkipDays.includes(day)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditSkipDays([...editSkipDays, day]);
+                          } else {
+                            setEditSkipDays(editSkipDays.filter(d => d !== day));
+                          }
+                        }}
+                      />
+                      <span>{day}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowEditModal(false)}>
+                Cancel
+              </button>
+              <button 
+                className="btn-primary" 
+                onClick={handleEditSubscription}
+                disabled={actionLoading === selectedSubscription._id}
+              >
+                {actionLoading === selectedSubscription._id ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>
